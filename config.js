@@ -10,10 +10,12 @@
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
 // Your web app's Firebase configuration
-const app = initializeApp(firebaseConfig);
-window.APP_CONFIG = {
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyD9-EsoT8JxvLN4OvH88uWgDQNoyOeBzUY",
   authDomain: "kanban-e062c.firebaseapp.com",
@@ -23,9 +25,10 @@ const firebaseConfig = {
   messagingSenderId: "143213145875",
   appId: "1:143213145875:web:f0ec18522727c39ebab4e6"
 };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
   },
   */
-
   appName: 'Kanban Flow Game',
   brand: 'Lean Agile Ninja',
   brandUrl: 'https://leanagile.ninja',
