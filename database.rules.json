@@ -1,0 +1,25 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sessions": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && $code.matches(/^[A-Z0-9]{5}$/)",
+        "game": {
+          ".validate": "newData.hasChildren(['phase', 'facilitator', 'settings'])"
+        },
+        "log": {
+          "$entry": {
+            ".validate": "newData.hasChildren(['t'])"
+          }
+        },
+        "presence": {
+          "$pid": {
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      }
+    }
+  }
+}
