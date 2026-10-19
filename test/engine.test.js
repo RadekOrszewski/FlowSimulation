@@ -135,7 +135,7 @@ test('WIP suggestion scales with group size', () => {
 });
 
 // ---------- urgent tasks ----------
-test('urgent tasks: percentage drives the next card; urgent work first', () => {
+test('urgent tasks: percentage drives the next card; players are not forced to do them first', () => {
   const g = setup(1, { urgentPct: 100 });
   E.startRound(g, 1);
   assert.strictEqual(g.nextUrgent, true);
@@ -144,12 +144,25 @@ test('urgent tasks: percentage drives the next card; urgent work first', () => {
   assert.ok(u.urgent);
   g.settings.urgentPct = 0; g.nextUrgent = false;
   E.roll(g, 'p1', 3);
-  assert.strictEqual(E.apply(g, 'p1', { type: 'start' }).ok, false, 'starting is refused: urgent first');
-  assert.ok(E.apply(g, 'p1', { type: 'move', card: u.id }).ok);
-  assert.strictEqual(u.col, 'test');
-  E.roll(g, 'p1', 6);
   const l = E.legalActions(g, 'p1');
-  assert.deepStrictEqual(l, [{ type: 'move', card: u.id }], 'urgent first, nothing else allowed');
+  assert.ok(l.some(a => a.type === 'start'), 'starting is allowed although an urgent task could move');
+  assert.ok(l.some(a => a.type === 'move' && a.card === u.id), 'moving the urgent task is allowed too');
+  assert.ok(E.apply(g, 'p1', { type: 'start' }).ok);
+  assert.strictEqual(u.col, 'dev', 'urgent task left where it was');
+});
+
+test('urgent tasks are not forced when helping either', () => {
+  const g = setup(3, { wip: { dev: 2, test: 2 }, urgentPct: 0 });
+  toRound2(g);
+  E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'start' });
+  E.roll(g, 'p2', 3); E.apply(g, 'p2', { type: 'start' });
+  const [a] = cardsOf(g, 'p1').filter(c => c.round === 2);
+  const [b] = cardsOf(g, 'p2').filter(c => c.round === 2);
+  a.urgent = true;
+  E.roll(g, 'p3', 3); // Development full, p3 has no tasks -> help
+  const l = E.legalActions(g, 'p3');
+  assert.ok(l.every(x => x.help), 'help mode');
+  assert.ok(l.some(x => x.card === a.id) && l.some(x => x.card === b.id), 'urgent and standard tasks both offered');
 });
 
 test('urgent tasks never exceed WIP limits', () => {
@@ -189,11 +202,14 @@ test('metrics: queue waiting time, flow efficiency, urgent vs standard', () => {
   E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'move', card: c.id }); // d6 -> done
   const m = E.metrics(g, 1);
   assert.strictEqual(m.finished, 1);
-  assert.strictEqual(m.avgCycleTime, 6);
-  assert.strictEqual(m.avgWait, 3);
+  assert.strictEqual(m.p85CycleTime, 6);
+  assert.strictEqual(m.p85Wait, 3);
   assert.strictEqual(m.flowEfficiency, 0.5);
-  assert.strictEqual(m.avgCtStandard, 6);
-  assert.strictEqual(m.avgCtUrgent, null);
+  assert.strictEqual(m.p85CtStandard, 6);
+  assert.strictEqual(m.p85CtUrgent, null);
+  // 85th percentile of daily WIP over the played days (nearest rank)
+  const wips = m.days.filter(d => d.day > 0).map(d => d.wip).sort((p, q) => p - q);
+  assert.strictEqual(m.p85Wip, wips[Math.ceil(0.85 * wips.length) - 1]);
   assert.ok(m.days.find(d => d.day === 3).c[q] === 1);
 });
 
@@ -236,13 +252,9 @@ function fuzz(games) {
           const l = E.legalActions(g, p);
           if (!l.length) continue;
           const touched = Object.assign({}, g.turns[p].touched);
-          // urgent first: if an own urgent task can be moved/unblocked, nothing else is legal
           const a = l[Math.floor(Math.random() * l.length)];
           if (a.card) assert.ok(!touched[a.card], 'same task twice in a day');
           if (a.type === 'block') assert.ok(E.isActive(g, g.cards[a.card].col), 'block only in active columns');
-          if (l.some(x => x.card && g.cards[x.card].urgent && (x.type !== 'block'))) {
-            assert.ok(l.every(x => x.type === 'block' || (x.card && g.cards[x.card].urgent)), 'urgent work first');
-          }
           assert.ok(E.apply(g, p, a).ok);
           if (r === 2) for (const c of E.columns(g)) {
             const lim = E.limitOf(g, c.id); if (!lim) continue;
@@ -258,8 +270,8 @@ function fuzz(games) {
     if (m1.hasQueues && m1.finished) assert.ok(m1.flowEfficiency > 0 && m1.flowEfficiency <= 1);
     if (n % 5 === 0) {
       fuzzStats.r1 += m1.finished; fuzzStats.r2 += m2.finished;
-      fuzzStats.ct1 += m1.avgCycleTime || 0; fuzzStats.ct2 += m2.avgCycleTime || 0;
-      fuzzStats.w1 += m1.avgWip; fuzzStats.w2 += m2.avgWip; fuzzStats.k = (fuzzStats.k || 0) + 1;
+      fuzzStats.ct1 += m1.p85CycleTime || 0; fuzzStats.ct2 += m2.p85CycleTime || 0;
+      fuzzStats.w1 += m1.p85Wip; fuzzStats.w2 += m2.p85Wip; fuzzStats.k = (fuzzStats.k || 0) + 1;
     }
   }
 }

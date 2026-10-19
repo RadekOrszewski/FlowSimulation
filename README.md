@@ -5,7 +5,7 @@ A Featureban-style Kanban simulation for **online workshops**. Every participant
 1. **Round 1 – no WIP limits.** Players start work freely; the board fills up, blocked tasks pile up, little gets finished.
 2. **Round 2 – with WIP limits.** Starting is impossible while a column is full, so players are pushed to *stop starting, start finishing* and help each other.
 
-A debrief screen then compares both rounds side by side (tasks finished, cycle time, WIP, throughput, cumulative flow diagrams, cycle-time histograms, discussion questions; plus waiting time and flow efficiency when the board has queues, and urgent vs standard cycle time when urgent tasks were used) and lets the facilitator download the data as CSV.
+A debrief screen then compares both rounds side by side (tasks finished, cycle time and WIP as 85th percentiles, throughput, cumulative flow diagrams, cycle-time histograms, discussion questions; plus waiting time and flow efficiency when the board has queues, and urgent vs standard cycle time when urgent tasks were used; the cycle-time histograms mark the 85% line) and lets the facilitator download the data as CSV.
 
 Inspired by Featureban, a game by Mike Burrows, using the dice variant of the rules.
 
@@ -26,7 +26,7 @@ Players can't break the rules: the app only highlights the cards (and the *Start
 - A task started today can't also be moved today.
 - **Round 2:** every column with a WIP limit enforces it (blocked tasks count). Starting or moving into a full column is not offered. When nothing else is possible, the player is switched to *help mode*.
 - **Queue columns** (optional, e.g. "Ready for Testing") sit between two work steps. No work happens there: tasks in a queue can't be blocked, and moving a task in and moving it out take one action each. They make waiting time visible.
-- **Urgent tasks** (optional): the facilitator sets what percentage of new tasks are urgent. The next card in the backlog shows whether it is urgent. If a player can move or unblock one of their urgent tasks, that is the only thing they're allowed to do; when helping, urgent tasks come first too. Urgent tasks never exceed WIP limits.
+- **Urgent tasks** (optional): the facilitator sets what percentage of new tasks are urgent. The next card in the backlog shows whether it is urgent, and urgent tasks are always shown at the top of their column. Players are **not** forced to work on them first, in either round: whether the team prioritises them (typically after the round 1 reflection) is their own choice, and the debrief's urgent vs standard cycle time shows what they did. Urgent tasks never exceed WIP limits.
 - If an action by someone else removes all of a player's options mid-turn, that turn ends automatically and the log says so.
 - Turn order is a facilitator setting: *everyone at once* (fast, good for online) or *one player at a time* (like the table game).
 
@@ -84,7 +84,7 @@ Commit, wait a minute, reload the page: the red **TEST MODE** label disappears a
    - add work steps (up to 4) or remove them;
    - add a **queue** between two work steps;
    - set **WIP limits** per column for round 2 (*Apply* fills in a suggestion that scales with the number of players; 0 = no limit);
-   - set the **share of urgent tasks** (0–100 %). Urgent tasks get priority but always respect WIP limits.
+   - set the **share of urgent tasks** (0–100 %). Urgent tasks are marked and kept at the top of their column, are not forced to go first, and always respect WIP limits.
    The board layout is locked once round 1 starts, so both rounds are played on the same board and can be compared.
 4. Choose days per round (10 is a good default, 6–8 if time is short) and the turn order, then **Start round 1**.
 5. Players roll the die and click highlighted cards. The day advances automatically when everyone is done (or click **Next day**; use **skip** next to a player who stepped away).

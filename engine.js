@@ -23,8 +23,9 @@
  * by the facilitator (blocked tasks count towards WIP).
  *
  * Urgent tasks (optional, settings.urgentPct % of new tasks):
- *   - If you can move or unblock one of your urgent tasks, you must do that
- *     first (same when helping: urgent tasks first).
+ *   - Urgent tasks are only marked (and shown at the top of their column).
+ *     Nothing forces players to work on them first: whether the team
+ *     prioritises them is their own choice, visible in the debrief.
  *   - Urgent tasks respect WIP limits like any other task (no expedite).
  */
 (function (root) {
@@ -154,7 +155,7 @@
     return c && c.wip > 0 ? c.wip : 0;
   }
 
-  // Urgent tasks get priority but never exceed WIP limits.
+  // Urgent tasks never exceed WIP limits.
   function hasCapacity(g, col) {
     var l = limitOf(g, col);
     if (!l) return true;
@@ -179,11 +180,6 @@
   }
 
   // ---------- legal actions ----------
-  function urgentFirst(g, acts) {
-    var urgentActs = acts.filter(function (a) { return a.card && g.cards[a.card].urgent; });
-    return urgentActs.length ? urgentActs : acts;
-  }
-
   function cardActions(g, cards, help) {
     var acts = [];
     cards.forEach(function (c) {
@@ -205,8 +201,6 @@
     if (step === 'start') return canStart ? [{ type: 'start' }] : [];
     // step === 'any'
     var acts = cardActions(g, mine, false);
-    var urgent = acts.filter(function (a) { return g.cards[a.card].urgent; });
-    if (urgent.length) return urgent; // urgent work first
     if (canStart) acts.push({ type: 'start' });
     return acts;
   }
@@ -215,7 +209,7 @@
     var others = roundCards(g).filter(function (c) {
       return c.owner !== pid && c.col !== 'done' && !touched[c.id];
     });
-    return urgentFirst(g, cardActions(g, others, true));
+    return cardActions(g, others, true);
   }
 
   function stepActions(g, pid, step, touched) {
@@ -544,7 +538,12 @@
     return w;
   }
 
-  function avg(a) { return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null; }
+  // 85th percentile (nearest-rank): 85% of values are at or below it.
+  function p85(a) {
+    if (!a.length) return null;
+    var s = a.slice().sort(function (x, y) { return x - y; });
+    return s[Math.min(s.length - 1, Math.ceil(0.85 * s.length) - 1)];
+  }
 
   function metrics(g, round) {
     var h = g.history['r' + round];
@@ -565,8 +564,6 @@
       return { day: d, c: c, wip: wip, done: s.done || 0, blocked: s.blocked || 0 };
     });
     var played = days.filter(function (d) { return d.day > 0; });
-    var sorted = ct.slice().sort(function (a, b) { return a - b; });
-    function pct(p) { return sorted.length ? sorted[Math.min(sorted.length - 1, Math.ceil(p * sorted.length) - 1)] : null; }
     var urgentDone = done.filter(function (c) { return c.urgent; });
     var stdDone = done.filter(function (c) { return !c.urgent; });
     var hasQ = Object.keys(passiveIds).length > 0;
@@ -581,17 +578,16 @@
       inProgress: cards.length - done.length,
       blockedAtEnd: cards.filter(function (c) { return c.blocked && c.col !== 'done'; }).length,
       throughputPerDay: played.length ? done.length / played.length : 0,
-      avgCycleTime: avg(ct),
-      p85CycleTime: pct(0.85),
+      p85CycleTime: p85(ct),
       cycleTimes: ct,
-      avgWip: played.length ? avg(played.map(function (d) { return d.wip; })) : 0,
+      p85Wip: played.length ? p85(played.map(function (d) { return d.wip; })) : 0,
       helpedCards: cards.filter(function (c) { return c.helpers && Object.keys(c.helpers).length; }).length,
       urgentStarted: cards.filter(function (c) { return c.urgent; }).length,
       urgentFinished: urgentDone.length,
-      avgCtUrgent: avg(urgentDone.map(ctOf)),
-      avgCtStandard: avg(stdDone.map(ctOf)),
+      p85CtUrgent: p85(urgentDone.map(ctOf)),
+      p85CtStandard: p85(stdDone.map(ctOf)),
       hasQueues: hasQ,
-      avgWait: hasQ ? avg(waits) : null,
+      p85Wait: hasQ ? p85(waits) : null,
       flowEfficiency: hasQ && sumCt ? (sumCt - sumWait) / sumCt : null,
       columns: cols,
       wipLimits: !!h.wipLimits,

@@ -67,14 +67,14 @@
       r2done: 'Both rounds are done. Open the debrief to compare them.',
       // results
       resultsTitle: 'Round {n} results', debriefTitle: 'Debrief: what did limiting WIP change?',
-      k_finished: 'Tasks finished', k_started: 'Tasks started', k_ct: 'Avg cycle time', k_ct85: '85% of tasks done within',
-      k_wip: 'Avg work in progress', k_tp: 'Throughput / day', k_wipEnd: 'Unfinished at end', k_helped: 'Tasks with help',
+      k_finished: 'Tasks finished', k_started: 'Tasks started', k_ct85: 'Cycle time (85%)',
+      k_wip85: 'Work in progress (85%)', k_tp: 'Throughput / day', k_wipEnd: 'Unfinished at end', k_helped: 'Tasks with help',
       days_u: 'days', nPlayers: '{n} players', r1: 'Round 1', r2: 'Round 2', noWip: 'no WIP limits', withWip: 'WIP {dev}/{test}',
       cfd: 'Cumulative flow', ctDist: 'Cycle time distribution', ctAxis: 'cycle time (days)', tasksAxis: 'tasks',
       questions: 'Questions for the debrief',
       q1: 'How did it feel to start new work in round 1? What happened to the board?',
       q2: 'What changed when WIP limits forced you to stop starting?',
-      q3: 'Compare average WIP, throughput and cycle time. Can you see Little\'s Law at work?',
+      q3: 'Compare WIP, throughput and cycle time between the rounds. Can you see Little\'s Law at work?',
       q4: 'How did blocked tasks affect each round? Who unblocked them?',
       q5: 'What made you help others in round 2? What would that look like in your real team?',
       q6: 'Which WIP limits would you try on your own board, and how would you know they work?',
@@ -86,11 +86,8 @@
       e_generic: 'Something went wrong: {msg}', connecting: 'Connecting…',
       e_fb: 'Could not connect to Firebase. Check config.js and that Anonymous sign-in and the Realtime Database are enabled. ({msg})',
       colStep: 'Step {n}', colWait: 'Ready for {next}', queue: 'queue · waiting', urgent: 'URGENT',
-      urgentFirstShort: 'Urgent first — move or unblock your urgent task.',
-      step_urgent: 'Urgent first: move or unblock your highlighted urgent task.',
-      urgentHelp: 'Urgent tasks come first.',
       rQueue: 'Queue columns ({names}) are waiting areas: no work happens there and tasks there can\'t be blocked. Moving a task in and moving it out take one action each.',
-      rUrgent: 'Urgent tasks (about {p}% of new tasks): if you can move or unblock your urgent task, you must do that first. When helping, urgent tasks come first too.',
+      rUrgent: 'Urgent tasks (about {p}% of new tasks) are marked ⚡ and shown at the top of their column. How you treat them is up to you.',
       rNoExpedite: 'Urgent tasks still respect WIP limits.',
       boardSetup: 'Board', setupBtn: 'Board & rules setup', renameBtn: 'Rename columns',
       setupTitle: 'Board & rules setup', columnsTitle: 'Columns & WIP limits',
@@ -102,11 +99,11 @@
       wipTitleLive: 'WIP limits (live)', wipNoPlayers: 'A suggestion based on group size appears once players have joined.',
       urgentTitle: 'Urgent tasks', urgentPct: 'Share of new tasks that are urgent',
       urgentShort: 'Urgent',
-      urgentHelp2: 'The next card in the backlog shows whether it is urgent. Players must work on their urgent tasks first. Settings for round 2 can be changed after round 1.',
+      urgentHelp2: 'The next card in the backlog shows whether it is urgent. Urgent tasks are marked and kept at the top of their column, but players are not forced to work on them first. Settings for round 2 can be changed after round 1.',
       urgentLocked: 'Urgent settings can be changed between rounds.',
       done: 'Done', close: 'Close',
       l_wipChange: 'Facilitator set the WIP limit of {col} to {wip}',
-      k_wait: 'Avg time waiting in queues', k_fe: 'Flow efficiency', k_ctUrgent: 'Avg cycle time · urgent', k_ctStd: 'Avg cycle time · standard', k_urgentDone: 'Urgent tasks finished',
+      k_wait: 'Time waiting in queues (85%)', k_fe: 'Flow efficiency', k_ctUrgent: 'Cycle time (85%) · urgent', k_ctStd: 'Cycle time (85%) · standard', k_urgentDone: 'Urgent tasks finished',
       wipChanged: 'WIP limits changed during round 2:', allTasks: 'all tasks', urgentTasks: 'urgent tasks',
       q7: 'What happened to the standard work whenever an urgent task appeared? What does that cost in your real work?',
       q8: 'Where did tasks wait the longest? What would shorten that waiting time?',
@@ -168,14 +165,14 @@
       showResults: 'Pokaż podsumowanie wszystkim', r1done: 'Runda 1 zakończona. Omówcie, co się stało, potem ustaw limity WIP.',
       r2done: 'Obie rundy zakończone. Otwórz podsumowanie, żeby je porównać.',
       resultsTitle: 'Wyniki rundy {n}', debriefTitle: 'Podsumowanie: co zmieniło ograniczenie WIP?',
-      k_finished: 'Ukończone zadania', k_started: 'Rozpoczęte zadania', k_ct: 'Śr. czas cyklu', k_ct85: '85% zadań ukończonych w',
-      k_wip: 'Śr. praca w toku (WIP)', k_tp: 'Przepustowość / dzień', k_wipEnd: 'Nieukończone na koniec', k_helped: 'Zadania z pomocą',
+      k_finished: 'Ukończone zadania', k_started: 'Rozpoczęte zadania', k_ct85: 'Czas cyklu (85%)',
+      k_wip85: 'Praca w toku – WIP (85%)', k_tp: 'Przepustowość / dzień', k_wipEnd: 'Nieukończone na koniec', k_helped: 'Zadania z pomocą',
       days_u: 'dni', nPlayers: 'graczy: {n}', r1: 'Runda 1', r2: 'Runda 2', noWip: 'bez limitów WIP', withWip: 'WIP {dev}/{test}',
       cfd: 'Skumulowany przepływ (CFD)', ctDist: 'Rozkład czasu cyklu', ctAxis: 'czas cyklu (dni)', tasksAxis: 'zadania',
       questions: 'Pytania do omówienia',
       q1: 'Jak się czuliście, zaczynając nowe zadania w rundzie 1? Co stało się z tablicą?',
       q2: 'Co się zmieniło, gdy limity WIP zmusiły was, by przestać zaczynać?',
-      q3: 'Porównajcie średni WIP, przepustowość i czas cyklu. Widać prawo Little\'a?',
+      q3: 'Porównajcie WIP, przepustowość i czas cyklu w obu rundach. Widać prawo Little\'a?',
       q4: 'Jak blokady wpłynęły na każdą z rund? Kto je usuwał?',
       q5: 'Co skłoniło was do pomagania innym w rundzie 2? Jak to wyglądałoby w waszym zespole?',
       q6: 'Jakie limity WIP wypróbowalibyście na swojej tablicy i po czym poznacie, że działają?',
@@ -186,11 +183,8 @@
       e_generic: 'Coś poszło nie tak: {msg}', connecting: 'Łączenie…',
       e_fb: 'Nie udało się połączyć z Firebase. Sprawdź config.js oraz czy włączone są logowanie anonimowe i Realtime Database. ({msg})',
       colStep: 'Krok {n}', colWait: 'Czeka na: {next}', queue: 'kolejka · oczekiwanie', urgent: 'PILNE',
-      urgentFirstShort: 'Najpierw pilne — przesuń lub odblokuj swoje pilne zadanie.',
-      step_urgent: 'Najpierw pilne: przesuń lub odblokuj podświetlone pilne zadanie.',
-      urgentHelp: 'Pilne zadania mają pierwszeństwo.',
       rQueue: 'Kolumny-kolejki ({names}) to miejsca oczekiwania: nikt tam nie pracuje, a zadań w nich nie da się zablokować. Wejście do kolejki i wyjście z niej to osobne akcje.',
-      rUrgent: 'Pilne zadania (ok. {p}% nowych zadań): jeśli możesz przesunąć lub odblokować swoje pilne zadanie, musisz zrobić to najpierw. Pomagając innym, też zaczynasz od pilnych.',
+      rUrgent: 'Pilne zadania (ok. {p}% nowych zadań) są oznaczone ⚡ i widoczne na górze kolumny. To, jak je potraktujecie, zależy od was.',
       rNoExpedite: 'Pilne zadania też podlegają limitom WIP.',
       boardSetup: 'Tablica', setupBtn: 'Ustawienia tablicy i zasad', renameBtn: 'Zmień nazwy kolumn',
       setupTitle: 'Ustawienia tablicy i zasad', columnsTitle: 'Kolumny i limity WIP',
@@ -202,11 +196,11 @@
       wipTitleLive: 'Limity WIP (na żywo)', wipNoPlayers: 'Propozycja dopasowana do liczby graczy pojawi się, gdy dołączą gracze.',
       urgentTitle: 'Pilne zadania', urgentPct: 'Odsetek nowych zadań, które są pilne',
       urgentShort: 'Pilne',
-      urgentHelp2: 'Kolejna karta w backlogu pokazuje, czy jest pilna. Gracze muszą najpierw zająć się swoimi pilnymi zadaniami. Ustawienia na rundę 2 można zmienić po rundzie 1.',
+      urgentHelp2: 'Kolejna karta w backlogu pokazuje, czy jest pilna. Pilne zadania są oznaczone i zawsze na górze kolumny, ale gracze nie muszą zajmować się nimi najpierw. Ustawienia na rundę 2 można zmienić po rundzie 1.',
       urgentLocked: 'Ustawienia pilnych zadań można zmieniać między rundami.',
       done: 'Gotowe', close: 'Zamknij',
       l_wipChange: 'Prowadzący ustawia limit WIP dla: {col} na {wip}',
-      k_wait: 'Śr. czas oczekiwania w kolejkach', k_fe: 'Efektywność przepływu', k_ctUrgent: 'Śr. czas cyklu · pilne', k_ctStd: 'Śr. czas cyklu · standardowe', k_urgentDone: 'Ukończone pilne zadania',
+      k_wait: 'Czas oczekiwania w kolejkach (85%)', k_fe: 'Efektywność przepływu', k_ctUrgent: 'Czas cyklu (85%) · pilne', k_ctStd: 'Czas cyklu (85%) · standardowe', k_urgentDone: 'Ukończone pilne zadania',
       wipChanged: 'Zmiany limitów WIP w rundzie 2:', allTasks: 'wszystkie zadania', urgentTasks: 'pilne zadania',
       q7: 'Co działo się ze standardową pracą, gdy pojawiało się pilne zadanie? Ile to kosztuje w waszej prawdziwej pracy?',
       q8: 'Gdzie zadania czekały najdłużej? Co skróciłoby ten czas oczekiwania?',
@@ -426,10 +420,6 @@
       return esc(colLabel(c.id)) + ' ' + (html ? '<b>' + v + '</b>' : v);
     }).join(' · ');
   }
-  function urgentMode(legal) {
-    return legal.length > 0 && legal.some(function (a) { return a.type !== 'block'; }) &&
-      legal.every(function (a) { return a.card && S.game.cards[a.card].urgent; });
-  }
 
   // ================================================================ main render
   function render() {
@@ -468,10 +458,10 @@
 
   function roundSummary(n) {
     var m = E.metrics(S.game, n); if (!m) return '';
-    var k = kpi(t('k_finished'), m.finished) + kpi(t('k_ct'), fmt(m.avgCycleTime) + ' <span>' + t('days_u') + '</span>') +
-      kpi(t('k_wip'), fmt(m.avgWip)) + kpi(t('k_wipEnd'), m.inProgress);
+    var k = kpi(t('k_finished'), m.finished) + kpi(t('k_ct85'), fmt(m.p85CycleTime) + ' <span>' + t('days_u') + '</span>') +
+      kpi(t('k_wip85'), fmt(m.p85Wip)) + kpi(t('k_wipEnd'), m.inProgress);
     if (m.hasQueues) k += kpi(t('k_fe'), m.flowEfficiency == null ? '–' : Math.round(m.flowEfficiency * 100) + '<span>%</span>');
-    if (m.urgentStarted) k += kpi(t('k_ctUrgent'), fmt(m.avgCtUrgent) + ' <span>' + t('days_u') + '</span>');
+    if (m.urgentStarted) k += kpi(t('k_ctUrgent'), fmt(m.p85CtUrgent) + ' <span>' + t('days_u') + '</span>');
     return '<div class="panel" style="margin-bottom:12px"><h3>' + t('resultsTitle', { n: n }) + '</h3>' +
       '<div class="kpis" style="margin:8px 0">' + k + '</div>' +
       '<div class="chart summary-chart">' + cfdSvg(m, cfdMax([m]), S.game.settings.days) + '</div>' + cfdLegend(m.columns) + '</div>';
@@ -489,8 +479,7 @@
     var cards = g.phase === 'lobby' ? [] : E.roundCards(g);
     var tn = S.me && g.turns[S.me];
     var myStepCanStart = tn && tn.roll && !tn.done && tn.steps.length && tn.steps[0] !== 'block';
-    var urgentFirst = urgentMode(legal);
-    var startBlockedByWip = myStepCanStart && !canStart && !urgentFirst && !E.hasCapacity(g, E.firstCol(g));
+    var startBlockedByWip = myStepCanStart && !canStart && !E.hasCapacity(g, E.firstCol(g));
 
     function card(c) {
       var p = g.players[c.owner] || { name: '?', color: '#dee2e6' };
@@ -506,7 +495,9 @@
         '<span class="own">' + esc(p.name) + '</span>' + (a ? '<span class="tip">' + esc(tip) + '</span>' : '') + '</button>';
     }
     function column(key, type) {
-      var list = cards.filter(function (c) { return c.col === key; });
+      var list = cards.filter(function (c) { return c.col === key; }).sort(function (a, b) {
+        return (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0) || a.no - b.no;
+      });
       var lim = E.limitOf(g, key), cnt = list.length;
       var badge = key === 'done' ? cnt : (g.round === 2 && lim ? cnt + ' / ' + lim : cnt);
       var full = lim && cnt >= lim;
@@ -520,8 +511,7 @@
     var backlog = '<div class="col backlog"><div class="col-h"><b title="' + esc(colLabel('backlog')) + '">' + esc(colLabel('backlog')) + '</b><span class="wipb">∞</span></div><div class="col-b">' +
       '<div class="stack' + (nextUrg ? ' urgent' : '') + '"><i></i><i></i><i></i><span>#' + (showNext ? g.nextNo : '…') + (nextUrg ? '<em>⚡ ' + t('urgent') + '</em>' : '') + '</span></div>' +
       (S.me ? '<button class="btn y start-btn' + (canStart ? ' hint' : '') + '" data-start="1"' + (canStart ? '' : ' disabled') + '>' + t('startNew') + '</button>' : '') +
-      (startBlockedByWip ? '<div class="stop-msg">' + t('stopStart') + '</div>' : '') +
-      (myStepCanStart && urgentFirst ? '<div class="stop-msg">' + t('urgentFirstShort') + '</div>' : '') + '</div></div>';
+      (startBlockedByWip ? '<div class="stop-msg">' + t('stopStart') + '</div>' : '') + '</div></div>';
     var tmpl = ['minmax(120px,150px)'].concat(cols.map(function (c) {
       return c.type === 'passive' ? 'minmax(112px,.7fr)' : 'minmax(132px,1fr)';
     }), ['minmax(116px,.85fr)']).join(' ');
@@ -552,8 +542,7 @@
       else { var ap = g.players[E.activePlayerId(g)]; html += '<div class="dice-row">' + dieHtml(0, '', 'disabled') + '<div><div class="msg">' + t('waitFor', { name: esc(ap ? ap.name : '') }) + '</div></div></div>'; }
     } else {
       var step = tn.steps[0], legal = E.legalActions(g, S.me), help = isHelpMode();
-      var msg = help ? t('step_help') : (step !== 'block' && urgentMode(legal)) ? t('step_urgent') : t('step_' + step);
-      if (help && urgentMode(legal)) msg += ' ' + t('urgentHelp');
+      var msg = help ? t('step_help') : t('step_' + step);
       html += '<div class="dice-row">' + dieHtml(tn.roll, S.rolling ? 'rolling' : '', 'disabled') + '<div><div class="msg">' + msg + '</div></div></div>';
       var all = E.stepsFor(tn.roll), usedN = all.length - tn.steps.length;
       html += '<div class="steps">' + all.map(function (s, i) {
@@ -774,7 +763,7 @@
     });
     return s + '</svg>';
   }
-  function histSvg(cts, maxX, maxY, urgentCts) {
+  function histSvg(cts, maxX, maxY, urgentCts, p85) {
     var W = 560, H = 200, L = 34, R = 10, T = 10, B = 30, iw = W - L - R, ih = H - T - B;
     var counts = {}, ucounts = {};
     cts.forEach(function (c) { counts[c] = (counts[c] || 0) + 1; });
@@ -787,6 +776,11 @@
       if (c) s += '<rect x="' + (xx + 3) + '" y="' + (T + ih - h) + '" width="' + Math.max(2, bw - 6) + '" height="' + h + '" rx="3" fill="#16213e"/>';
       if (u) s += '<rect x="' + (xx + 3) + '" y="' + (T + ih - hu) + '" width="' + Math.max(2, bw - 6) + '" height="' + hu + '" rx="3" fill="#e03131"/>';
       s += '<text x="' + (xx + bw / 2) + '" y="' + (H - 14) + '" font-size="10" text-anchor="middle" fill="#667085" font-family="DM Mono, monospace">' + i + '</text>';
+    }
+    if (p85 != null) {
+      var px = L + p85 * bw;
+      s += '<line x1="' + px + '" x2="' + px + '" y1="' + T + '" y2="' + (T + ih) + '" stroke="#f5b700" stroke-width="2" stroke-dasharray="5 4"/>' +
+        '<text x="' + (px - 4) + '" y="' + (T + 10) + '" font-size="10" text-anchor="end" fill="#16213e" font-family="DM Mono, monospace">85% ≤ ' + p85 + '</text>';
     }
     s += '<text x="' + (L + iw / 2) + '" y="' + (H - 1) + '" font-size="10" text-anchor="middle" fill="#667085">' + esc(t('ctAxis')) + '</text>';
     return s + '</svg>';
@@ -823,17 +817,16 @@
       return t('day') + ' ' + w.day + ': ' + esc(colLabel(w.col)) + ' → ' + (w.wip > 0 ? w.wip : '∞');
     }).join('; ') + '</p>' : '';
     var kp = cmp(t('k_finished'), m1 && m1.finished, m2 && m2.finished, '', false, 1) +
-      cmp(t('k_ct'), m1 && m1.avgCycleTime, m2 && m2.avgCycleTime, t('days_u'), true) +
       cmp(t('k_ct85'), m1 && m1.p85CycleTime, m2 && m2.p85CycleTime, t('days_u'), true) +
-      cmp(t('k_wip'), m1 && m1.avgWip, m2 && m2.avgWip, '', true) +
+      cmp(t('k_wip85'), m1 && m1.p85Wip, m2 && m2.p85Wip, '', true) +
       cmp(t('k_tp'), m1 && m1.throughputPerDay, m2 && m2.throughputPerDay, '', false, 100) +
       cmp(t('k_started'), m1 && m1.started, m2 && m2.started, '', null, 1) +
       cmp(t('k_wipEnd'), m1 && m1.inProgress, m2 && m2.inProgress, '', true, 1) +
       cmp(t('k_helped'), m1 && m1.helpedCards, m2 && m2.helpedCards, '', false, 1);
-    if (queues) kp += cmp(t('k_wait'), m1 && m1.avgWait, m2 && m2.avgWait, t('days_u'), true) +
+    if (queues) kp += cmp(t('k_wait'), m1 && m1.p85Wait, m2 && m2.p85Wait, t('days_u'), true) +
       cmp(t('k_fe'), pctOf(m1, 'flowEfficiency'), pctOf(m2, 'flowEfficiency'), '%', false, 1);
-    if (anyUrgent) kp += cmp(t('k_ctUrgent'), m1 && m1.avgCtUrgent, m2 && m2.avgCtUrgent, t('days_u'), true) +
-      cmp(t('k_ctStd'), m1 && m1.avgCtStandard, m2 && m2.avgCtStandard, t('days_u'), true) +
+    if (anyUrgent) kp += cmp(t('k_ctUrgent'), m1 && m1.p85CtUrgent, m2 && m2.p85CtUrgent, t('days_u'), true) +
+      cmp(t('k_ctStd'), m1 && m1.p85CtStandard, m2 && m2.p85CtStandard, t('days_u'), true) +
       cmp(t('k_urgentDone'), m1 && m1.urgentFinished, m2 && m2.urgentFinished, '', null, 1);
     var qs = ['q1', 'q2', 'q3', 'q4', 'q5'].concat(queues ? ['q8'] : [], anyUrgent ? ['q7'] : [], ['q6']);
     var html = '<div class="results"><div class="row" style="flex-wrap:wrap"><h1 style="flex:1 1 auto">' + t('debriefTitle') + '</h1>' +
@@ -843,8 +836,8 @@
       '<div class="kpis">' + kp + '</div><div class="charts">' +
       '<div class="panel chart"><h3>' + t('cfd') + ' · ' + t('r1') + '</h3>' + (m1 ? cfdSvg(m1, maxY, maxX) + cfdLegend(m1.columns) : '') + '</div>' +
       '<div class="panel chart"><h3>' + t('cfd') + ' · ' + t('r2') + '</h3>' + (m2 ? cfdSvg(m2, maxY, maxX) + cfdLegend(m2.columns) : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('ctDist') + ' · ' + t('r1') + '</h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1)) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('ctDist') + ' · ' + t('r2') + '</h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2)) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
+      '<div class="panel chart"><h3>' + t('ctDist') + ' · ' + t('r1') + '</h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1), m1.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
+      '<div class="panel chart"><h3>' + t('ctDist') + ' · ' + t('r2') + '</h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2), m2.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
       '</div><div class="panel" style="margin-top:14px"><h3>' + t('questions') + '</h3><ol class="debrief-q">' +
       qs.map(function (q) { return '<li>' + t(q) + '</li>'; }).join('') + '</ol></div></div>';
     setHTML($app, html);
