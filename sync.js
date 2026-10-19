@@ -73,6 +73,26 @@
       },
       watchPresence: function (code, cb) {
         return dbm.onValue(r('sessions/' + code + '/presence'), function (s) { cb(s.val() || {}); });
+      },
+      // ---- workshop (several parallel groups, one facilitator)
+      wsCreate: async function (code, ws) {
+        var res = await dbm.runTransaction(r('sessions/' + code + '/workshop'), function (cur) {
+          if (cur !== null) return;
+          return plain(ws);
+        });
+        return res.committed;
+      },
+      wsWatch: function (code, cb) {
+        return dbm.onValue(r('sessions/' + code + '/workshop'), function (s) { cb(s.val()); });
+      },
+      wsUpdate: async function (code, mutate) {
+        var out = null;
+        var res = await dbm.runTransaction(r('sessions/' + code + '/workshop'), function (cur) {
+          if (cur === null) return;
+          out = mutate(cur);
+          return out ? plain(cur) : undefined;
+        });
+        return res.committed && !!out;
       }
     };
   }
@@ -137,6 +157,20 @@
         }
         tick(); var t = setInterval(tick, 2000);
         return function () { clearInterval(t); };
+      },
+      wsCreate: async function (code, ws) {
+        return locked(code, function () {
+          if (read(code, 'ws', null)) return false;
+          write(code, 'ws', ws); notify(code, 'ws'); return true;
+        });
+      },
+      wsWatch: function (code, cb) { return listen(code, 'ws', function () { cb(read(code, 'ws', null)); }); },
+      wsUpdate: async function (code, mutate) {
+        return locked(code, function () {
+          var cur = read(code, 'ws', null); if (!cur) return false;
+          if (!mutate(cur)) return false;
+          write(code, 'ws', cur); notify(code, 'ws'); return true;
+        });
       }
     };
   }

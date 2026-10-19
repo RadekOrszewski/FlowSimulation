@@ -78,8 +78,11 @@ Commit, wait a minute, reload the page: the red **TEST MODE** label disappears a
 
 ## Running a workshop
 
-1. Open the app and click **Create new session**. You become the facilitator; the panel shows a 5-letter code.
-2. Share the invite link (**Copy invite link**) or the code. Participants enter their name and pick an avatar (each avatar can be used by one player only). Their avatar appears on every task they own.
+1. Open the app, choose the number of **parallel groups (1–4)** and click **Create new session**. You land on the **workshop dashboard** (keep **Copy dashboard link** to come back from any device).
+2. Each group has its own board, code and invite link: copy each group's link to its players. Participants enter their name and pick an avatar (one avatar per player within a group); the dashboard shows who has joined each group, live. Their avatar appears on every task they own and in the team strip above the board.
+   - Board layout, WIP limits, urgent tasks, days per round and turn order are **shared by all groups**: change them on the dashboard (or from any group's board) and every group gets the same setup.
+   - **Start round 1 / 2 in all groups**, **End round** and **Show the debrief to everyone** act on all groups at once; **Open board ↗** opens a group's board with facilitator controls (next day, add tasks, skip or remove players), and each group card also has **+10 tasks** and **Next day**.
+   - **Results by group** on the dashboard shows each group's round 1 results and, after round 2, its round 1 vs round 2 debrief, one tab per group (with CSV download). Each group's players see only their own results.
 3. Optional: open **Board & rules setup** to
    - rename any column, including Backlog and Done (names can be changed at any time, also mid-game);
    - add work steps (up to 4) or remove them;

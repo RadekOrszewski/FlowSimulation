@@ -52,7 +52,16 @@
     ];
   }
 
-  function newGame(facilitatorId, now) {
+  // opts (optional, for workshops with parallel groups):
+  //   ws: workshop code, group: 0-based index, groupName, settings: shared settings to copy
+  function newGame(facilitatorId, now, opts) {
+    var g = newGameBase(facilitatorId, now);
+    opts = opts || {};
+    if (opts.ws) { g.ws = opts.ws; g.group = opts.group || 0; g.groupName = opts.groupName || ''; }
+    if (opts.settings) g.settings = clone(opts.settings);
+    return g;
+  }
+  function newGameBase(facilitatorId, now) {
     return {
       v: 2,
       phase: 'lobby',          // lobby | playing | roundEnd | debrief

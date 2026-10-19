@@ -10,7 +10,20 @@
       tagline: 'A Featureban-style Kanban simulation for online workshops. Everyone plays on the same live board from their own browser.',
       heroA: 'Feel the flow.', heroB: 'Stop starting, start finishing.',
       hostTitle: 'Host a session', hostText: 'Create a board, share the code, and guide your group through two rounds: without and with WIP limits.',
-      hostBtn: 'Create new session',
+      hostBtn: 'Create new session', hostGroups: 'Parallel groups',
+      groupName: 'Group {x}', wsTitle: 'Workshop {code}', wsChip: 'Workshop',
+      wsSub: 'Share each group\'s link with its players. Columns, WIP limits, urgent tasks and days per round are shared by all groups.',
+      wsGroupsLabel: 'Number of groups', wsGroupsLocked: 'Groups can be added or removed before round 1.',
+      wsShared: 'Shared settings · all groups', wsRounds: 'Rounds · all groups', wsLink: 'Copy dashboard link', wsLinkHint: 'Bookmark this link to return to the dashboard from any device.',
+      openBoard: 'Open board ↗', copyLink: 'Copy', noPlayersYet: 'Nobody has joined yet.',
+      startR1All: 'Start round 1 in all groups', startR2All: 'Start round 2 in all groups', endRoundAll: 'End round in all groups',
+      showDebriefAll: 'Show the debrief to everyone', nextDayShort: 'Next day', addTasksShort: '+{n} tasks',
+      gs_lobby: 'Waiting to start', gs_play: 'Round {n} · day {day} of {days}', gs_end: 'Round {n} finished', gs_debrief: 'Debrief',
+      results: 'Results by group', resNone: 'Results appear here when a group finishes a round.', resPlaying: 'Round {n} in progress: day {day} of {days}.',
+      resWaiting: 'This group hasn\'t started yet.',
+      emptyGroupsConfirm: 'These groups have no players and will not start: {list}. Continue?', rmGroupConfirm: '{g} already has players. Remove the group anyway?',
+      wsBack: '← All groups', wsSharedNote: 'Settings you change here apply to all groups.', wsNotFac: 'Only the facilitator can open this dashboard. Use your facilitator link.',
+      wsNotFound: 'Workshop {code} doesn\'t exist.', teamN: 'Team · {n}',
       joinTitle: 'Join a session', joinText: 'Enter the code your facilitator shared.', joinBtn: 'Join',
       codePh: 'CODE',
       testMode: '<b>Test mode</b> – no database configured. Sessions sync only between tabs of this browser. Open several tabs to rehearse; add a Firebase config in <span class="mono">config.js</span> to play online.',
@@ -72,7 +85,7 @@
       resultsTitle: 'Round {n} results', debriefTitle: 'Debrief: what did limiting WIP change?',
       k_finished: 'Tasks finished', k_started: 'Tasks started', k_ct85: 'Cycle time (85%)',
       k_wip85: 'Work in progress (85%)', k_tp: 'Throughput / day', k_wipEnd: 'Unfinished at end', k_helped: 'Tasks with help',
-      days_u: 'days', nPlayers: '{n} players', r1: 'Round 1', r2: 'Round 2', noWip: 'no WIP limits', withWip: 'WIP {dev}/{test}',
+      days_u: 'days', nPlayers: 'Players: {n}', r1: 'Round 1', r2: 'Round 2', noWip: 'no WIP limits', withWip: 'WIP {dev}/{test}',
       cfd: 'Cumulative flow', ctDist: 'Cycle time distribution', ctAxis: 'cycle time (days)', tasksAxis: 'tasks',
       csv: 'Download data (CSV)', newSession: 'New session', backToBoard: 'Back to board',
       // errors
@@ -109,7 +122,20 @@
       tagline: 'Symulacja Kanban w stylu Featureban do warsztatów online. Wszyscy grają na tej samej, żywej tablicy — każdy we własnej przeglądarce.',
       heroA: 'Poczuj przepływ.', heroB: 'Przestań zaczynać, zacznij kończyć.',
       hostTitle: 'Poprowadź sesję', hostText: 'Utwórz tablicę, udostępnij kod i przeprowadź grupę przez dwie rundy: bez limitów WIP i z limitami.',
-      hostBtn: 'Utwórz nową sesję',
+      hostBtn: 'Utwórz nową sesję', hostGroups: 'Równoległe grupy',
+      groupName: 'Grupa {x}', wsTitle: 'Warsztat {code}', wsChip: 'Warsztat',
+      wsSub: 'Udostępnij każdej grupie jej link. Kolumny, limity WIP, pilne zadania i liczba dni są wspólne dla wszystkich grup.',
+      wsGroupsLabel: 'Liczba grup', wsGroupsLocked: 'Grupy można dodawać i usuwać przed rundą 1.',
+      wsShared: 'Wspólne ustawienia · wszystkie grupy', wsRounds: 'Rundy · wszystkie grupy', wsLink: 'Kopiuj link do panelu', wsLinkHint: 'Zapisz ten link, by wrócić do panelu z dowolnego urządzenia.',
+      openBoard: 'Otwórz tablicę ↗', copyLink: 'Kopiuj', noPlayersYet: 'Nikt jeszcze nie dołączył.',
+      startR1All: 'Rozpocznij rundę 1 we wszystkich grupach', startR2All: 'Rozpocznij rundę 2 we wszystkich grupach', endRoundAll: 'Zakończ rundę we wszystkich grupach',
+      showDebriefAll: 'Pokaż podsumowanie wszystkim', nextDayShort: 'Następny dzień', addTasksShort: '+{n} zadań',
+      gs_lobby: 'Czeka na start', gs_play: 'Runda {n} · dzień {day} z {days}', gs_end: 'Runda {n} zakończona', gs_debrief: 'Podsumowanie',
+      results: 'Wyniki grup', resNone: 'Wyniki pojawią się tu, gdy grupa skończy rundę.', resPlaying: 'Trwa runda {n}: dzień {day} z {days}.',
+      resWaiting: 'Ta grupa jeszcze nie zaczęła.',
+      emptyGroupsConfirm: 'Te grupy nie mają graczy i nie wystartują: {list}. Kontynuować?', rmGroupConfirm: 'W grupie {g} są już gracze. Usunąć ją mimo to?',
+      wsBack: '← Wszystkie grupy', wsSharedNote: 'Zmiany ustawień tutaj dotyczą wszystkich grup.', wsNotFac: 'Ten panel jest dostępny tylko dla prowadzącego. Użyj swojego linku prowadzącego.',
+      wsNotFound: 'Warsztat {code} nie istnieje.', teamN: 'Zespół · {n}',
       joinTitle: 'Dołącz do sesji', joinText: 'Wpisz kod od prowadzącego.', joinBtn: 'Dołącz',
       codePh: 'KOD',
       testMode: '<b>Tryb testowy</b> – brak skonfigurowanej bazy. Sesje synchronizują się tylko między kartami tej przeglądarki. Otwórz kilka kart, żeby przećwiczyć; dodaj konfigurację Firebase w <span class="mono">config.js</span>, aby grać online.',
@@ -211,7 +237,10 @@
   // ================================================================ state
   var S = {
     sync: null, code: null, me: null, fac: false, game: null, log: [], presence: {},
-    prevCards: {}, changedUntil: {}, setup: false, rolling: false, busy: false, unsub: [], resultsTab: false
+    prevCards: {}, changedUntil: {}, setup: false, rolling: false, busy: false, unsub: [], resultsTab: false,
+    // workshop dashboard (facilitator, several groups)
+    wsCode: null, ws: null, groups: {}, gpres: {}, wsUnsub: [], wsWatched: {}, resGroup: null, nGroups: 1,
+    wsGroups: null   // codes of all groups when a facilitator has one group's board open
   };
   var $app = document.getElementById('app');
   var $ov = document.getElementById('overlay');
@@ -244,28 +273,69 @@
     return e;
   }
   var QUIET = { turnDone: 1 };
-  async function act(fn) {
-    if (S.busy) return { ok: false };
-    S.busy = true;
-    try {
-      var res = await S.sync.transact(S.code, function (g) {
+  async function runOn(code, fn) {
+      var res = await S.sync.transact(code, function (g) {
         var r = fn(g);
         if (r.ok) r.events = r.events.filter(function (e) {
           return !QUIET[e.t] && !(e.t === 'skip' && e.step === 'block');
         }).map(function (e) { return named(g, e); });
         return r;
       });
-      if (res.ok && res.events && res.events.length) S.sync.addLog(S.code, res.events);
-      if (!res.ok && res.error) toast(t('e_' + res.error) !== 'e_' + res.error ? t('e_' + res.error) : res.error, true);
+      if (res.ok && res.events && res.events.length) S.sync.addLog(code, res.events);
+      return res;
+  }
+  function errText(e) { return t('e_' + e) !== 'e_' + e ? t('e_' + e) : e; }
+  function act(fn) { return actOn(S.code, fn); }
+  async function actOn(code, fn) {
+    if (S.busy) return { ok: false };
+    S.busy = true;
+    try {
+      var res = await runOn(code, fn);
+      if (!res.ok && res.error) toast(errText(res.error), true);
       return res;
     } catch (e) {
       console.error(e); toast(t('e_generic', { msg: e.message }), true); return { ok: false };
     } finally { S.busy = false; }
   }
+  // Run the same change on several groups (one transaction each).
+  async function actMany(codes, fn) {
+    if (S.busy) return { ok: false };
+    S.busy = true;
+    var first = null, okN = 0;
+    try {
+      for (var i = 0; i < codes.length; i++) {
+        var res = await runOn(codes[i], fn);
+        if (res.ok) okN++; else if (!first && res.error) first = { code: codes[i], error: res.error };
+      }
+    } catch (e) { console.error(e); toast(t('e_generic', { msg: e.message }), true); }
+    finally { S.busy = false; }
+    if (first && !okN) toast(errText(first.error), true);
+    return { ok: okN > 0 };
+  }
+  // Settings (columns, WIP, urgent %, days…) are shared by all groups of a workshop.
+  function sharedCodes() { return S.wsCode && S.ws ? wsGroupCodes() : (S.wsGroups && S.wsGroups.length ? S.wsGroups : [S.code]); }
+  function actShared(fn) { var c = sharedCodes(); return c.length > 1 ? actMany(c, fn) : actOn(c[0], fn); }
+  function suggestShared() {
+    var best = S.game;
+    if (S.wsCode) wsGames().forEach(function (g) { if (E.playerList(g).length > E.playerList(best).length) best = g; });
+    return E.suggestWip(best);
+  }
+  function withGame(g, fn) {
+    var keep = S.game; S.game = g;
+    try { return fn(); } finally { S.game = keep; }
+  }
 
   // ================================================================ routing
   function route() {
     var h = decodeURIComponent(location.hash.slice(1));
+    var w = h.match(/^ws\/([A-Z0-9]{5})(?:\/host\/([a-z0-9]+))?$/i);
+    if (w) {
+      var wc = w[1].toUpperCase();
+      if (w[2]) { store().setItem('kfg:wsfac:' + wc, w[2]); history.replaceState(null, '', '#ws/' + wc); }
+      if (S.code) leaveSession();
+      openWorkshop(wc); return;
+    }
+    leaveWorkshop();
     var m = h.match(/^([A-Z0-9]{5})(?:\/host\/([a-z0-9]+))?$/i);
     if (!m) { leaveSession(); renderHome(); return; }
     var code = m[1].toUpperCase();
@@ -276,6 +346,7 @@
   function leaveSession() {
     S.unsub.forEach(function (u) { try { u(); } catch (e) { } });
     S.unsub = []; S.code = null; S.game = null; S.log = []; S.me = null; S.fac = false; S.prevCards = {};
+    S.wsGroups = null; S.wsGroupsWatch = false;
     $ov.innerHTML = '';
     renderHeader();
   }
@@ -290,6 +361,10 @@
       S.game = g ? E.norm(g) : null;
       if (S.game) {
         S.fac = store().getItem('kfg:fac:' + code) === S.game.facilitator;
+        if (S.fac && S.game.ws && !S.wsGroupsWatch) {
+          S.wsGroupsWatch = true;
+          S.unsub.push(S.sync.wsWatch(S.game.ws, function (ws) { S.wsGroups = ws ? arrOf(ws.groups) : null; }));
+        }
         if (S.me && !S.game.players[S.me]) S.me = null;
         trackChanges();
       }
@@ -320,7 +395,10 @@
     document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
     var h = '';
     var g = S.game;
-    if (S.code && g) {
+    if (S.wsCode) {
+      h += '<span class="chip">' + t('wsChip') + ' <b>' + S.wsCode + '</b></span>';
+    } else if (S.code && g) {
+      if (g.groupName) h += '<span class="chip grp">' + esc(t('groupName', { x: g.groupName })) + '</span>';
       h += '<span class="chip">' + t('session') + ' <b>' + S.code + '</b></span>';
       if (g.phase === 'lobby') h += '<span class="chip y">' + t('lobby') + '</span>';
       else h += '<span class="chip y">' + t('round') + ' ' + g.round + ' · ' + t('day') + ' ' + Math.min(g.day, g.settings.days) + ' ' + t('of') + ' ' + g.settings.days + '</span>';
@@ -341,7 +419,11 @@
     $app.innerHTML =
       '<div class="home"><div class="hero"><h1>' + t('heroA') + '<br><mark>' + t('heroB') + '</mark></h1><p>' + t('tagline') + '</p></div>' +
       '<div class="home-grid">' +
-      '<div class="panel"><h2>' + t('hostTitle') + '</h2><p class="muted">' + t('hostText') + '</p><button class="btn y" id="hostBtn">' + t('hostBtn') + '</button></div>' +
+      '<div class="panel"><h2>' + t('hostTitle') + '</h2><p class="muted">' + t('hostText') + '</p>' +
+      '<label class="f">' + t('hostGroups') + '</label><div class="seg" role="radiogroup">' + [1, 2, 3, 4].map(function (n) {
+        return '<button type="button" role="radio" aria-checked="' + (S.nGroups === n) + '" class="' + (S.nGroups === n ? 'on' : '') + '" data-hostn="' + n + '">' + n + '</button>';
+      }).join('') + '</div>' +
+      '<button class="btn y" id="hostBtn" style="margin-top:14px">' + t('hostBtn') + '</button></div>' +
       '<div class="panel"><h2>' + t('joinTitle') + '</h2><p class="muted">' + t('joinText') + '</p><form id="joinForm" class="row">' +
       '<input type="text" class="code-input" id="codeIn" maxlength="5" placeholder="' + t('codePh') + '" autocomplete="off"><button class="btn" style="flex:0 0 auto">' + t('joinBtn') + '</button></form></div>' +
       '</div>' + (S.sync.kind === 'local' ? '<div class="testmode">' + t('testMode') + '</div>' : '') + '</div>';
@@ -353,15 +435,201 @@
     };
   }
 
+  // A session is a workshop with 1-4 parallel groups; each group is its own board with its own code.
   async function hostSession() {
-    var fid = 'f' + rid(10);
-    for (var i = 0; i < 5; i++) {
-      var code = newCode();
-      var ok = await S.sync.create(code, E.newGame(fid, Date.now()));
-      if (ok) { store().setItem('kfg:fac:' + code, fid); location.hash = code; return; }
+    var fid = 'f' + rid(10), wcode = null;
+    for (var i = 0; i < 6 && !wcode; i++) {
+      var c = newCode();
+      if (await S.sync.wsCreate(c, { facilitator: fid, groups: [], createdAt: Date.now() })) wcode = c;
     }
-    toast('Could not create a session', true);
+    if (!wcode) { toast('Could not create a session', true); return; }
+    store().setItem('kfg:wsfac:' + wcode, fid);
+    var settings = null;
+    for (var k = 0; k < S.nGroups; k++) {
+      var code = await createGroup(wcode, fid, k, settings);
+      if (!code) break;
+      if (!settings) settings = E.newGame(fid).settings;
+    }
+    location.hash = 'ws/' + wcode;
   }
+  var LETTERS = 'ABCD';
+  async function createGroup(wcode, fid, idx, settings) {
+    for (var i = 0; i < 6; i++) {
+      var code = newCode();
+      var game = E.newGame(fid, Date.now(), { ws: wcode, group: idx, groupName: LETTERS[idx], settings: settings || undefined });
+      if (await S.sync.create(code, game)) {
+        store().setItem('kfg:fac:' + code, fid);
+        await S.sync.wsUpdate(wcode, function (ws) { var gl = arrOf(ws.groups); gl.push(code); ws.groups = gl; return true; });
+        return code;
+      }
+    }
+    toast('Could not create a group', true); return null;
+  }
+  function arrOf(x) { return !x ? [] : Array.isArray(x) ? x.filter(Boolean) : Object.keys(x).sort(function (a, b) { return a - b; }).map(function (k) { return x[k]; }); }
+
+  // ================================================================ workshop dashboard
+  function wsGroupCodes() { return S.ws ? arrOf(S.ws.groups) : []; }
+  function wsGames() { return wsGroupCodes().map(function (c) { return S.groups[c]; }).filter(Boolean); }
+  function leaveWorkshop() {
+    if (!S.wsCode) return;
+    S.wsUnsub.forEach(function (u) { try { u(); } catch (e) { } });
+    S.wsUnsub = []; S.wsWatched = {}; S.wsCode = null; S.ws = null; S.groups = {}; S.gpres = {};
+    S.game = null; S.fac = false; S.setup = false; $app._html = null;
+  }
+  function openWorkshop(code) {
+    if (S.wsCode === code) return;
+    leaveWorkshop();
+    S.wsCode = code; S.wsLoaded = false;
+    $app._html = null;
+    S.wsUnsub.push(S.sync.wsWatch(code, function (ws) {
+      S.ws = ws; S.wsLoaded = true;
+      wsGroupCodes().forEach(function (c) {
+        if (S.wsWatched[c]) return;
+        S.wsWatched[c] = true;
+        S.wsUnsub.push(S.sync.watch(c, function (g) { S.groups[c] = g ? E.norm(g) : null; syncTemplate(); renderWorkshop(); }));
+        S.wsUnsub.push(S.sync.watchPresence(c, function (p) { S.gpres[c] = p || {}; renderWorkshop(); }));
+      });
+      syncTemplate(); renderWorkshop();
+    }));
+  }
+  // The setup dialog edits "the" game: on the dashboard that is the first group, and every change goes to all groups.
+  function syncTemplate() {
+    var codes = wsGroupCodes(), g = codes.length ? S.groups[codes[0]] : null;
+    S.game = g || null; S.code = null;
+    S.fac = !!(S.ws && store().getItem('kfg:wsfac:' + S.wsCode) === S.ws.facilitator);
+  }
+  function groupStatus(g) {
+    if (g.phase === 'lobby') return t('gs_lobby');
+    if (g.phase === 'playing') return t('gs_play', { n: g.round, day: Math.min(g.day, g.settings.days), days: g.settings.days });
+    if (g.phase === 'roundEnd') return t('gs_end', { n: g.round });
+    return t('gs_debrief');
+  }
+  function groupCard(code) {
+    var g = S.groups[code], pres = S.gpres[code] || {};
+    if (!g) return '<div class="gcard"><div class="small muted">…</div></div>';
+    var url = baseUrl() + '#' + code, list = E.playerList(g), active = g.settings.turnMode === 'turns' && g.phase === 'playing' ? E.activePlayerId(g) : null;
+    var doneN = list.filter(function (p) { return g.turns[p.id] && g.turns[p.id].done; }).length;
+    var html = '<div class="gcard"><div class="gh"><b>' + esc(t('groupName', { x: g.groupName || '?' })) + '</b><span class="gcode">' + code + '</span>' +
+      '<span class="gstat ' + g.phase + '">' + groupStatus(g) + '</span>' +
+      (g.phase === 'lobby' && wsGroupCodes().length > 1 ? '<button class="x" data-rmgroup="' + code + '" title="✕">✕</button>' : '') + '</div>';
+    if (g.phase === 'playing') html += '<div class="progress"><i style="width:' + Math.round((g.day - 1) / g.settings.days * 100) + '%"></i></div>';
+    html += '<div class="glink"><input type="text" readonly value="' + esc(url) + '" aria-label="' + esc(t('invite')) + '"><button class="btn ghost sm" data-copyurl="' + esc(url) + '">' + t('copyLink') + '</button></div>';
+    html += list.length ? '<ul class="gplayers">' + list.map(function (p) {
+      var tn = g.turns[p.id], st = '';
+      if (g.phase === 'playing') st = tn && tn.done ? '✓' : tn && tn.roll ? '🎲 ' + tn.roll : active === p.id ? '▶' : '';
+      return '<li>' + av(p, 34) + '<span class="on-dot' + (pres[p.id] ? ' on' : '') + '"></span><span class="pname">' + esc(p.name) + '</span><span class="pstat">' + st + '</span></li>';
+    }).join('') + '</ul>' : '<p class="small muted gempty">' + t('noPlayersYet') + '</p>';
+    html += '<div class="gbtns"><a class="btn ghost sm" target="_blank" rel="noopener" href="' + esc(baseUrl() + '#' + code + '/host/' + g.facilitator) + '">' + t('openBoard') + '</a>';
+    if (g.phase === 'playing') {
+      html += '<span class="small muted" style="margin-right:auto">' + t('playersDone', { n: doneN, m: list.length }) + '</span>' +
+        '<button class="btn ghost sm" data-gfac="addBacklog" data-gcode="' + code + '" title="' + esc(t('inBacklog', { n: E.backlogTasks(g).length })) + '">' + t('addTasksShort', { n: E.BACKLOG_ADD }) + '</button>' +
+        '<button class="btn ghost sm" data-gfac="nextDay" data-gcode="' + code + '">' + t('nextDayShort') + '</button>';
+    }
+    return html + '</div></div>';
+  }
+  function wsResults() {
+    var codes = wsGroupCodes().filter(function (c) { return S.groups[c]; });
+    var any = codes.some(function (c) { var g = S.groups[c]; return g.round > 1 || g.phase === 'roundEnd' || g.phase === 'debrief'; });
+    if (!any) return '';
+    if (!S.resGroup || codes.indexOf(S.resGroup) < 0) S.resGroup = codes[0];
+    var g = S.groups[S.resGroup], body;
+    var r2done = g.round === 2 && (g.phase === 'roundEnd' || g.phase === 'debrief');
+    if (r2done) body = withGame(g, function () { return debriefBody(g); });
+    else if (E.metrics(g, 1) && (g.round === 2 || g.phase === 'roundEnd'))
+      body = withGame(g, function () { return roundSummary(1); }) +
+        (g.phase === 'playing' ? '<p class="small muted">' + t('resPlaying', { n: g.round, day: g.day, days: g.settings.days }) + '</p>' : '');
+    else if (g.phase === 'playing') body = '<p class="muted">' + t('resPlaying', { n: g.round, day: g.day, days: g.settings.days }) + '</p>';
+    else body = '<p class="muted">' + t('resWaiting') + '</p>';
+    return '<section class="ws-results"><div class="row" style="flex-wrap:wrap;align-items:flex-end"><h2 style="flex:1 1 auto;margin:0">' + t('results') + '</h2>' +
+      (r2done || g.phase === 'roundEnd' ? '<button class="btn ghost sm" style="flex:0 0 auto" data-gcsv="' + S.resGroup + '">' + t('csv') + '</button>' : '') + '</div>' +
+      '<div class="tabs" role="tablist">' + codes.map(function (c) {
+        var gg = S.groups[c], on = c === S.resGroup;
+        return '<button role="tab" aria-selected="' + on + '" class="tab' + (on ? ' on' : '') + '" data-restab="' + c + '">' + esc(t('groupName', { x: gg.groupName })) + '<small>' + groupStatus(gg) + '</small></button>';
+      }).join('') + '</div><div class="tabbody results">' + body + '</div></section>';
+  }
+  function wsControls() {
+    var games = wsGames(), g = S.game; if (!g) return '';
+    var s = g.settings;
+    var lobby = games.every(function (x) { return x.phase === 'lobby'; });
+    var anyPlaying = games.some(function (x) { return x.phase === 'playing'; });
+    var r1done = games.some(function (x) { return x.phase === 'roundEnd' && x.round === 1; });
+    var r2end = games.some(function (x) { return x.phase === 'roundEnd' && x.round === 2; });
+    var n = wsGroupCodes().length;
+    var html = '<div class="panel fac"><h3>' + t('wsGroupsLabel') + '</h3>' +
+      '<div class="seg">' + [1, 2, 3, 4].map(function (k) { return '<button class="' + (k === n ? 'on' : '') + '" data-ngroups="' + k + '"' + (lobby ? '' : ' disabled') + '>' + k + '</button>'; }).join('') + '</div>' +
+      '<p class="small muted" style="margin:6px 0 0">' + t('wsGroupsLocked') + '</p></div>';
+    html += '<div class="panel fac"><h3>' + t('wsRounds') + '</h3><div class="stack-btns" style="margin-top:4px">';
+    if (lobby) html += '<button class="btn y" data-wsfac="start1">' + t('startR1All') + '</button>';
+    if (anyPlaying) html += '<button class="btn ghost" data-wsfac="endRound">' + t('endRoundAll') + '</button>';
+    if (r1done) html += '<button class="btn y" data-wsfac="start2">' + t('startR2All') + '</button>';
+    if (r2end) html += '<button class="btn y" data-wsfac="debrief">' + t('showDebriefAll') + '</button>';
+    if (!lobby && !anyPlaying && !r1done && !r2end) html += '<p class="small muted" style="margin:0">' + t('gs_debrief') + '</p>';
+    html += '</div></div>';
+    if (g.phase !== 'debrief') {
+      html += '<div class="panel fac"><h3>' + t('wsShared') + '</h3>' + boardSummary(g) +
+        '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="3" max="40" value="' + s.days + '" data-set="days">';
+      if (lobby) html += '<label class="f">' + t('turnMode') + '</label><select data-set="turnMode"><option value="simultaneous"' + (s.turnMode !== 'turns' ? ' selected' : '') + '>' + t('tm_sim') + '</option><option value="turns"' + (s.turnMode === 'turns' ? ' selected' : '') + '>' + t('tm_turns') + '</option></select>';
+      html += '<label class="checkline"><input type="checkbox" data-set="autoAdvance"' + (s.autoAdvance ? ' checked' : '') + '> ' + t('autoAdv') + '</label>';
+      var r2live = games.some(function (x) { return x.round === 2 && x.phase === 'playing'; });
+      if (!anyPlaying || r2live) html += '<div class="fsec"><div class="fsec-h">' + t(r2live ? 'wipTitleLive' : 'wipTitle') + '</div>' + wipEditor(g, r2live) + '</div>';
+      if (!anyPlaying) html += '<div class="fsec"><div class="fsec-h">' + t('urgentTitle') + '</div>' + urgentEditor(g) + '</div>';
+      html += '</div>';
+    }
+    return html;
+  }
+  function renderWorkshop() {
+    if (!S.wsCode) return;
+    renderHeader();
+    if (!S.wsLoaded) return;
+    if (!S.ws) { setHTML($app, '<div class="home"><div class="panel"><p>' + t('wsNotFound', { code: esc(S.wsCode) }) + '</p><a class="btn" href="#">' + t('backHome') + '</a></div></div>'); return; }
+    if (!S.fac) { setHTML($app, '<div class="home"><div class="panel"><p>' + t('wsNotFac') + '</p><a class="btn" href="#">' + t('backHome') + '</a></div></div>'); return; }
+    renderSetup();
+    var codes = wsGroupCodes();
+    setHTML($app, '<div class="ws"><div class="ws-head"><div><h1>' + t('wsTitle', { code: S.wsCode }) + '</h1><p class="muted">' + t('wsSub') + '</p></div>' +
+      '<button class="btn ghost sm" style="flex:0 0 auto" data-copy="ws" title="' + esc(t('wsLinkHint')) + '">' + t('wsLink') + '</button></div>' +
+      '<div class="ws-grid"><div class="ws-main"><div class="gcards n' + codes.length + '">' + codes.map(groupCard).join('') + '</div>' + wsResults() + '</div>' +
+      '<aside class="ws-side">' + wsControls() + '</aside></div></div>');
+  }
+  async function setGroupCount(n) {
+    var codes = wsGroupCodes();
+    if (n === codes.length || !S.game) return;
+    if (n > codes.length) {
+      for (var i = codes.length; i < n; i++) {
+        var used = wsGames().map(function (x) { return x.group; }), idx = 0;
+        while (used.indexOf(idx) >= 0) idx++;
+        var c = await createGroup(S.wsCode, S.ws.facilitator, idx, S.game.settings);
+        if (!c) return;
+        await waitFor(function () { return S.groups[c]; });
+      }
+    } else {
+      var drop = codes.slice(n);
+      var withPlayers = drop.filter(function (c) { return S.groups[c] && E.playerList(S.groups[c]).length; });
+      if (withPlayers.length && !confirm(t('rmGroupConfirm', { g: withPlayers.map(function (c) { return t('groupName', { x: S.groups[c].groupName }); }).join(', ') }))) return;
+      await S.sync.wsUpdate(S.wsCode, function (ws) { ws.groups = arrOf(ws.groups).slice(0, n); return true; });
+    }
+  }
+  function waitFor(fn) {
+    return new Promise(function (res) { var k = 0; (function tick() { if (fn() || k++ > 40) res(); else setTimeout(tick, 100); })(); });
+  }
+  async function removeGroup(code) {
+    var g = S.groups[code];
+    if (g && E.playerList(g).length && !confirm(t('rmGroupConfirm', { g: t('groupName', { x: g.groupName }) }))) return;
+    await S.sync.wsUpdate(S.wsCode, function (ws) { ws.groups = arrOf(ws.groups).filter(function (c) { return c !== code; }); return true; });
+  }
+  async function wsFac(f) {
+    var codes = wsGroupCodes();
+    if (f === 'start1' || f === 'start2') {
+      var n = f === 'start1' ? 1 : 2;
+      var ready = codes.filter(function (c) { var g = S.groups[c]; return g && (n === 1 ? g.phase === 'lobby' : g.phase === 'roundEnd' && g.round === 1); });
+      var empty = ready.filter(function (c) { return !E.playerList(S.groups[c]).length; });
+      if (empty.length === ready.length) { toast(t('needPlayers'), true); return; }
+      if (empty.length && !confirm(t('emptyGroupsConfirm', { list: empty.map(function (c) { return t('groupName', { x: S.groups[c].groupName }); }).join(', ') }))) return;
+      actMany(ready.filter(function (c) { return empty.indexOf(c) < 0; }), function (g) { return E.startRound(g, n); });
+    }
+    if (f === 'endRound' && confirm(t('endRoundConfirm'))) actMany(codes.filter(function (c) { return S.groups[c] && S.groups[c].phase === 'playing'; }), function (g) { return E.endRound(g); });
+    if (f === 'debrief') actMany(codes.filter(function (c) { return S.groups[c] && S.groups[c].phase === 'roundEnd' && S.groups[c].round === 2; }), function (g) { return E.showDebrief(g); });
+  }
+
 
   // ================================================================ avatars
   function avatarOf(p) {
@@ -377,7 +645,7 @@
     var g = S.game;
     var offline = E.playerList(g).filter(function (p) { return !S.presence[p.id]; });
     var html = '<div class="home" style="max-width:580px"><div class="panel" style="padding:24px">' +
-      '<h2 style="margin-top:0">' + t('joinAs', { code: S.code }) + '</h2>';
+      '<h2 style="margin-top:0">' + (g.groupName ? esc(t('groupName', { x: g.groupName })) + ' · ' : '') + t('joinAs', { code: S.code }) + '</h2>';
     if (offline.length) {
       html += '<p class="small muted">' + t('reclaim') + '</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">' +
         offline.map(function (p) { return '<button class="btn ghost sm" data-reclaim="' + p.id + '" style="display:inline-flex;align-items:center;gap:6px">' + av(p, 20) + esc(p.name) + '</button>'; }).join('') +
@@ -447,6 +715,7 @@
 
   // ================================================================ main render
   function render() {
+    if (S.wsCode) { renderWorkshop(); return; }
     renderHeader();
     if (!S.code) return;
     if (!S.game) {
@@ -458,8 +727,8 @@
     if (S.game.phase === 'debrief' && !S.resultsTab) { renderDebrief(); return; }
     if (!$app.querySelector('#board')) {
       $app._html = null;
-      $app.innerHTML = '<div class="game"><section><div id="top"></div><div class="boardwrap"><div id="board" class="board"></div></div></section>' +
-        '<aside class="side"><div id="sTurn"></div><div id="sFac"></div><div id="sRules"></div><div id="sPlayers"></div><div id="sLog"></div></aside></div>';
+      $app.innerHTML = '<div class="game"><section><div id="top"></div><div id="sPlayers"></div><div class="boardwrap"><div id="board" class="board"></div></div></section>' +
+        '<aside class="side"><div id="sTurn"></div><div id="sFac"></div><div id="sRules"></div><div id="sLog"></div></aside></div>';
     }
     renderTop(); renderBoard(); renderTurn(); renderFac(); renderRules(); renderPlayers(); renderLog();
   }
@@ -609,8 +878,8 @@
     var el = document.getElementById('sPlayers'); if (!el || !S.game) return;
     var g = S.game, active = g.settings.turnMode === 'turns' && g.phase === 'playing' ? E.activePlayerId(g) : null;
     var list = E.playerList(g);
-    var html = '<div class="panel"><h3>' + t('team') + ' · ' + list.length + '</h3>';
-    if (!list.length) html += '<p class="small muted">' + t('noPlayers') + '</p>';
+    var html = '<div class="team-strip"><span class="team-h">' + (g.groupName ? esc(t('groupName', { x: g.groupName })) + ' · ' : '') + t('teamN', { n: list.length }) + '</span>';
+    if (!list.length) html += '<span class="small muted">' + t('noPlayers') + '</span>';
     html += '<ul class="plist">' + list.map(function (p) {
       var tn = g.turns[p.id], st = '';
       if (g.phase === 'playing') {
@@ -625,9 +894,9 @@
         if (g.phase === 'playing' && !(tn && tn.done)) controls += '<button class="btn ghost sm" data-skip="' + p.id + '" style="padding:2px 6px">' + t('skip') + '</button>';
         controls += '<button class="x" data-remove="' + p.id + '" title="✕">✕</button>';
       }
-      return '<li>' + av(p, 26) + '<span class="on-dot' + (S.presence[p.id] ? ' on' : '') + '"></span>' +
+      return '<li class="' + (p.id === S.me ? 'me' : '') + stCls + '"><span class="av-wrap">' + av(p, 30) + '<span class="on-dot' + (S.presence[p.id] ? ' on' : '') + '"></span></span>' +
         '<span class="pname' + (p.id === S.me ? ' me' : '') + '">' + esc(p.name) + (p.id === S.me ? ' (' + t('you') + ')' : '') + '</span>' +
-        '<span class="pstat' + stCls + '">' + st + '</span>' + controls + '</li>';
+        (st ? '<span class="pstat' + stCls + '">' + st + '</span>' : '') + controls + '</li>';
     }).join('') + '</ul></div>';
     setHTML(el, html);
   }
@@ -683,6 +952,8 @@
     if (!S.fac) { setHTML(el, ''); return; }
     var g = S.game, s = g.settings, n = E.playerList(g).length;
     var html = '<div class="panel fac"><h3>' + t('facPanel') + '</h3>';
+    if (g.ws) html += '<a class="btn ghost sm" href="#ws/' + esc(g.ws) + '" style="width:100%;margin-bottom:8px">' + t('wsBack') + '</a>' +
+      '<div class="small muted" style="margin-bottom:8px">' + esc(t('groupName', { x: g.groupName })) + ' · ' + t('wsSharedNote') + '</div>';
     html += '<div class="small muted">' + t('invite') + '</div><div class="big-code">' + S.code + '</div>' +
       '<div class="row"><button class="btn ghost sm" data-copy="invite">' + t('copyInvite') + '</button><button class="btn ghost sm" data-copy="fac" title="' + esc(t('facLinkHint')) + '">' + t('facLink') + '</button></div>';
 
@@ -842,7 +1113,14 @@
     return E.roundCards(g, r).filter(function (c) { return c.urgent && c.col === 'done'; }).map(function (c) { return c.doneDay - c.startDay + 1; });
   }
   function renderDebrief() {
-    var g = S.game, m1 = E.metrics(g, 1), m2 = E.metrics(g, 2);
+    var g = S.game;
+    setHTML($app, '<div class="results"><div class="row" style="flex-wrap:wrap"><h1 style="flex:1 1 auto">' + t('debriefTitle') + (g.groupName ? ' · ' + esc(t('groupName', { x: g.groupName })) : '') + '</h1>' +
+      '<div style="flex:0 0 auto;display:flex;gap:8px"><button class="btn ghost sm" data-results="0">' + t('backToBoard') + '</button>' +
+      (S.fac ? '<button class="btn ghost sm" data-csv="1">' + t('csv') + '</button>' : '') + '</div></div>' + debriefBody(g) + '</div>');
+  }
+  // Round 1 vs round 2 comparison for one game (uses S.game for labels: call through withGame for other groups)
+  function debriefBody(g) {
+    var m1 = E.metrics(g, 1), m2 = E.metrics(g, 2);
     var maxY = cfdMax([m1, m2]), maxX = Math.max(m1 ? m1.daysPlayed : 0, m2 ? m2.daysPlayed : 0);
     function cmp(label, a, b, unit, lowerBetter, dec) {
       var d = '';
@@ -880,10 +1158,7 @@
     if (anyUrgent) kp += cmp(t('k_ctUrgent'), m1 && m1.p85CtUrgent, m2 && m2.p85CtUrgent, t('days_u'), true) +
       cmp(t('k_ctStd'), m1 && m1.p85CtStandard, m2 && m2.p85CtStandard, t('days_u'), true) +
       cmp(t('k_urgentDone'), m1 && m1.urgentFinished, m2 && m2.urgentFinished, '', null, 1);
-    var html = '<div class="results"><div class="row" style="flex-wrap:wrap"><h1 style="flex:1 1 auto">' + t('debriefTitle') + '</h1>' +
-      '<div style="flex:0 0 auto;display:flex;gap:8px"><button class="btn ghost sm" data-results="0">' + t('backToBoard') + '</button>' +
-      (S.fac ? '<button class="btn ghost sm" data-csv="1">' + t('csv') + '</button>' : '') + '</div></div>' +
-      '<p class="muted">' + t('nPlayers', { n: E.playerList(g).length }) + '</p>' + wipChanges +
+    return '<p class="muted">' + t('nPlayers', { n: E.playerList(g).length }) + '</p>' + wipChanges +
       '<div class="panel cmp-panel"><table class="cmp-table"><thead><tr><th scope="col">' + t('measure') + '</th>' +
         '<th scope="col"><span class="rh r1">' + t('r1') + '</span><small>' + esc(roundSub(m1)) + '</small></th>' +
         '<th scope="col"><span class="rh r2">' + t('r2') + '</span><small>' + esc(roundSub(m2)) + '</small></th>' +
@@ -894,14 +1169,17 @@
       '<div class="panel chart"><h3>' + t('cfd') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? cfdSvg(m2, maxY, maxX) + cfdLegend(m2.columns) : '') + '</div>' +
       '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r1') + '</span></h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1), m1.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
       '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2), m2.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
-      '</div></div>';
-    setHTML($app, html);
+      '</div>';
   }
   function histLegend() {
     return '<div class="legend"><span><i style="background:#16213e"></i>' + t('allTasks') + '</span><span><i style="background:#e03131"></i>' + t('urgentTasks') + '</span></div>';
   }
 
-  function downloadCsv() {
+  function downloadCsv(gArg, codeArg) {
+    if (gArg) return withGame(gArg, function () { downloadCsvCur(codeArg); });
+    downloadCsvCur(S.code);
+  }
+  function downloadCsvCur(code) {
     var g = S.game, rows = [['round', 'task', 'owner', 'urgent', 'start_day', 'done_day', 'cycle_time_days', 'days_waiting_in_queues', 'column_at_end', 'blocked_at_end', 'helped_by', 'path']];
     var passive = {}; E.columns(g).forEach(function (c) { if (c.type === 'passive') passive[c.id] = true; });
     Object.keys(g.cards).map(function (k) { return g.cards[k]; }).sort(function (a, b) { return a.round - b.round || a.no - b.no; }).forEach(function (c) {
@@ -922,7 +1200,7 @@
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' }));
-    a.download = 'kanban-flow-game-' + S.code + '.csv'; a.click();
+    a.download = 'kanban-flow-game-' + (g.groupName ? 'group-' + g.groupName + '-' : '') + code + '.csv'; a.click();
   }
 
   // ================================================================ events
@@ -971,14 +1249,34 @@
     var b = e.target.closest('button,[data-lang]'); if (!b) return;
     var d = b.dataset;
     if (d.lang) { lang = d.lang; localStorage.setItem('kfg:lang', lang); $app._html = null; document.querySelectorAll('[id]').forEach(function (x) { x._html = null; }); S.code ? rerender() : renderHome(); return; }
-    if (d.copy) { copy(d.copy === 'fac' ? baseUrl() + '#' + S.code + '/host/' + S.game.facilitator : inviteUrl()); return; }
+    if (d.copy) {
+      if (d.copy === 'ws') copy(baseUrl() + '#ws/' + S.wsCode + '/host/' + S.ws.facilitator);
+      else copy(d.copy === 'fac' ? baseUrl() + '#' + S.code + '/host/' + S.game.facilitator : inviteUrl());
+      return;
+    }
+    if (d.copyurl) { copy(d.copyurl); return; }
+    if (d.hostn) { S.nGroups = Number(d.hostn); renderHome(); return; }
+    if (d.ngroups) { setGroupCount(Number(d.ngroups)); return; }
+    if (d.rmgroup) { removeGroup(d.rmgroup); return; }
+    if (d.wsfac) { wsFac(d.wsfac); return; }
+    if (d.restab) { S.resGroup = d.restab; renderWorkshop(); return; }
+    if (d.gcsv) { downloadCsv(S.groups[d.gcsv], d.gcsv); return; }
+    if (d.gfac) {
+      var gc = d.gcode, gg = S.groups[gc];
+      if (d.gfac === 'addBacklog') actOn(gc, function (g) { return E.addBacklog(g); });
+      if (d.gfac === 'nextDay' && gg) {
+        var allDone = E.playerList(gg).every(function (p) { return gg.turns[p.id] && gg.turns[p.id].done; });
+        if (allDone || confirm(t('nextDayConfirm'))) actOn(gc, function (g) { return E.nextDay(g); });
+      }
+      return;
+    }
     if (d.reclaim) { claim(d.reclaim); return; }
     if (d.results != null) { S.resultsTab = d.results === '0'; $app._html = null; $app.innerHTML = ''; render(); return; }
     if (d.csv) { downloadCsv(); return; }
     if (d.setup != null) { S.setup = d.setup === '1'; renderSetup(); return; }
-    if (d.addcol) { act(function (g) { return E.addActiveColumn(g); }); return; }
-    if (d.rmcol) { act(function (g) { return E.removeColumn(g, d.rmcol); }); return; }
-    if (d.togq) { act(function (g) { return E.togglePassiveAfter(g, d.togq); }); return; }
+    if (d.addcol) { actShared(function (g) { return E.addActiveColumn(g); }); return; }
+    if (d.rmcol) { actShared(function (g) { return E.removeColumn(g, d.rmcol); }); return; }
+    if (d.togq) { actShared(function (g) { return E.togglePassiveAfter(g, d.togq); }); return; }
     if (d.roll) {
       S.rolling = true; renderTurn();
       var started = Date.now();
@@ -1001,7 +1299,7 @@
       if (f === 'start2') act(function (g) { return E.startRound(g, 2); });
       if (f === 'debrief') act(function (g) { return E.showDebrief(g); });
       if (f === 'addBacklog') act(function (g) { return E.addBacklog(g); });
-      if (f === 'suggest') act(function (g) { return E.updateSettings(g, { wip: E.suggestWip(g) }); });
+      if (f === 'suggest') { var sw = suggestShared(); actShared(function (g) { return E.updateSettings(g, { wip: sw }); }); }
       if (f === 'nextDay') {
         var g0 = S.game, all = E.playerList(g0).every(function (p) { return g0.turns[p.id] && g0.turns[p.id].done; });
         if (all || confirm(t('nextDayConfirm'))) act(function (g) { return E.nextDay(g); });
@@ -1018,7 +1316,7 @@
     else if (head === 'colKind') { patch.colKinds = {}; patch.colKinds[id] = val; }
     else if (head === 'names') { patch.names = {}; patch.names[id] = val; }
     else patch[k] = val;
-    act(function (g) { return E.updateSettings(g, patch); }).then(function () {
+    actShared(function (g) { return E.updateSettings(g, patch); }).then(function () {
       if (document.activeElement === el) el.blur();
       rerender();
     });
