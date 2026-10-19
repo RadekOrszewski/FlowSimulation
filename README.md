@@ -5,7 +5,7 @@ A Featureban-style Kanban simulation for **online workshops**. Every participant
 1. **Round 1 – no WIP limits.** Players start work freely; the board fills up, blocked tasks pile up, little gets finished.
 2. **Round 2 – with WIP limits.** Starting is impossible while a column is full, so players are pushed to *stop starting, start finishing* and help each other.
 
-A debrief screen then compares both rounds side by side in a table, one row per measure (tasks finished, cycle time and WIP as 85th percentiles, throughput, cumulative flow diagrams, cycle-time histograms, discussion questions; plus waiting time and flow efficiency when the board has queues, and urgent vs standard cycle time when urgent tasks were used; the cycle-time histograms mark the 85% line) and lets the facilitator download the data as CSV.
+A debrief screen then compares both rounds side by side in a table, one row per measure (tasks finished, cycle time and WIP as 85th percentiles, throughput, cumulative flow diagrams, cycle-time histograms; plus waiting time and flow efficiency when the board has queues, and urgent vs standard cycle time when urgent tasks were used; the cycle-time histograms mark the 85% line) and lets the facilitator download the data as CSV.
 
 Inspired by Featureban, a game by Mike Burrows, using the dice variant of the rules.
 
@@ -115,7 +115,7 @@ Tips:
 | `index.html` | Page shell and styling |
 | `app.js` | Screens, board interaction, facilitator controls, charts, translations |
 | `engine.js` | Rules engine (pure JS, no dependencies) |
-| `avatars.js` | Player avatars, drawn as inline SVG (add or edit them in the `DEFS` list) |
+| `avatars.js` | Player avatars (36), drawn as inline SVG; add or edit them in the `DEFS` list (hair, beard, glasses, headgear, colours) |
 | `sync.js` | Firebase Realtime Database sync + local test mode |
 | `config.js` | Your settings |
 | `database.rules.json` | Security rules to paste into Firebase |

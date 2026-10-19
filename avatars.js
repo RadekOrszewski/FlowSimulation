@@ -47,7 +47,15 @@
     ['student', 'Student', 'Studentka', { skin: 3, hair: 'long', hc: 'brown', theme: 'glasses', shirt: '#7048e8', bg: '#e5dbff' }],
     ['hiker', 'Hiker', 'Turysta', { skin: 1, hair: 'short', hc: 'blonde', theme: 'beanie', tc: '#e03131', shirt: '#2b8a3e', bg: '#ebfbee' }],
     ['grandpa', 'Grandpa', 'Dziadek', { skin: 2, beard: 'grey', theme: 'glasses', shirt: '#a61e4d', bg: '#fff0f6' }],
-    ['curly', 'Curly', 'Loczek', { skin: 0, hair: 'afro', hc: 'red', shirt: '#0ca678', bg: '#e6fcf5' }]
+    ['curly', 'Curly', 'Loczek', { skin: 0, hair: 'afro', hc: 'red', shirt: '#0ca678', bg: '#e6fcf5' }],
+    ['bookworm', 'Bookworm', 'Mól książkowy', { skin: 1, hair: 'bun', hc: 'brown', glasses: 'round', gc: '#7c4a1e', shirt: '#0c8599', bg: '#e3fafc' }],
+    ['developer', 'Developer', 'Programista', { skin: 3, hair: 'short', hc: 'black', glasses: 'square', theme: 'headphones', tc: '#4c6ef5', shirt: '#343a40', bg: '#dbe4ff' }],
+    ['sunny', 'Sunny', 'Słoneczna', { skin: 2, hair: 'afro', hc: 'brown', glasses: 'sun', shirt: '#f76707', bg: '#fff4e6' }],
+    ['professor', 'Professor', 'Profesor', { skin: 4, hair: 'short', hc: 'grey', beard: 'grey', glasses: 'square', gc: '#16213e', shirt: '#5c7cfa', bg: '#edf2ff' }],
+    ['designer', 'Designer', 'Projektantka', { skin: 0, hair: 'bob', hc: 'pink', glasses: 'cat', gc: '#e03131', shirt: '#212529', bg: '#fff0f6' }],
+    ['coach', 'Coach', 'Trener', { skin: 1, hair: 'short', hc: 'brown', glasses: 'sun', theme: 'cap', tc: '#2f9e44', shirt: '#2f9e44', bg: '#ebfbee' }],
+    ['grandma', 'Grandma', 'Babcia', { skin: 1, hair: 'bun', hc: 'grey', glasses: 'round', gc: '#ae3ec9', shirt: '#ae3ec9', bg: '#f8f0fc' }],
+    ['artist', 'Artist', 'Artystka', { skin: 4, hair: 'long', hc: 'black', glasses: 'round', gc: '#f59f00', theme: 'beanie', tc: '#7048e8', shirt: '#f59f00', bg: '#f3f0ff' }]
   ];
 
   var byId = {};
@@ -146,6 +154,31 @@
     }
   }
 
+  // Glasses, worn on top of any hairstyle or theme. gc = frame colour.
+  function glasses(style, gc) {
+    var c = gc || INK;
+    var bridge = '<path d="M30.8,31.2 Q32,30.2 33.2,31.2" fill="none" stroke="' + c + '" stroke-width="1.5"/>' +
+      '<path d="M22,30.5 L17.5,29.5 M42,30.5 L46.5,29.5" stroke="' + c + '" stroke-width="1.4"/>';
+    switch (style) {
+      case 'square':
+        return '<rect x="22" y="28" width="8.8" height="7" rx="1.6" fill="#fff" fill-opacity=".25" stroke="' + c + '" stroke-width="1.6"/>' +
+          '<rect x="33.2" y="28" width="8.8" height="7" rx="1.6" fill="#fff" fill-opacity=".25" stroke="' + c + '" stroke-width="1.6"/>' + bridge;
+      case 'sun':
+        return '<rect x="21.5" y="28" width="9.5" height="7" rx="3" fill="' + INK + '" stroke="' + INK + '" stroke-width="1"/>' +
+          '<rect x="33" y="28" width="9.5" height="7" rx="3" fill="' + INK + '" stroke="' + INK + '" stroke-width="1"/>' +
+          '<path d="M23.5,30 L26,29.5 M35,30 L37.5,29.5" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" stroke-linecap="round"/>' +
+          '<path d="M30.8,31 L33.2,31" stroke="' + INK + '" stroke-width="1.5"/><path d="M21.5,30 L17.5,29.5 M42.5,30 L46.5,29.5" stroke="' + INK + '" stroke-width="1.4"/>';
+      case 'cat':
+        return '<path d="M21.5,29 Q26,27.5 30.8,29 L30,33.5 Q26.5,36 23,33.5 Z" fill="#fff" fill-opacity=".25" stroke="' + c + '" stroke-width="1.7" stroke-linejoin="round"/>' +
+          '<path d="M42.5,29 Q38,27.5 33.2,29 L34,33.5 Q37.5,36 41,33.5 Z" fill="#fff" fill-opacity=".25" stroke="' + c + '" stroke-width="1.7" stroke-linejoin="round"/>' +
+          '<path d="M21.5,29 L19.5,27.2 M42.5,29 L44.5,27.2" stroke="' + c + '" stroke-width="1.7" stroke-linecap="round"/>' +
+          '<path d="M30.8,30 Q32,29.2 33.2,30" fill="none" stroke="' + c + '" stroke-width="1.5"/>';
+      default: // round
+        return '<circle cx="26.5" cy="31.5" r="4.4" fill="#fff" fill-opacity=".25" stroke="' + c + '" stroke-width="1.6"/>' +
+          '<circle cx="37.5" cy="31.5" r="4.4" fill="#fff" fill-opacity=".25" stroke="' + c + '" stroke-width="1.6"/>' + bridge;
+    }
+  }
+
   var BEARD = { grey: HAIR.grey, red: HAIR.red, blonde: HAIR.blonde, black: HAIR.black, white: HAIR.white, brown: HAIR.brown };
 
   function svg(id, px) {
@@ -175,6 +208,7 @@
     if (r.theme === 'ninja') return s + theme(r, skin) + '</svg>';
     s += face(false);
     if (r.beard) s += beard(BEARD[r.beard] || HAIR.brown);
+    if (r.glasses) s += glasses(r.glasses, r.gc);
     s += hairFront(r.hair, hc) + theme(r, skin);
     return s + '</svg>';
   }

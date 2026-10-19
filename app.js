@@ -74,13 +74,6 @@
       k_wip85: 'Work in progress (85%)', k_tp: 'Throughput / day', k_wipEnd: 'Unfinished at end', k_helped: 'Tasks with help',
       days_u: 'days', nPlayers: '{n} players', r1: 'Round 1', r2: 'Round 2', noWip: 'no WIP limits', withWip: 'WIP {dev}/{test}',
       cfd: 'Cumulative flow', ctDist: 'Cycle time distribution', ctAxis: 'cycle time (days)', tasksAxis: 'tasks',
-      questions: 'Questions for the debrief',
-      q1: 'How did it feel to start new work in round 1? What happened to the board?',
-      q2: 'What changed when WIP limits forced you to stop starting?',
-      q3: 'Compare WIP, throughput and cycle time between the rounds. Can you see Little\'s Law at work?',
-      q4: 'How did blocked tasks affect each round? Who unblocked them?',
-      q5: 'What made you help others in round 2? What would that look like in your real team?',
-      q6: 'Which WIP limits would you try on your own board, and how would you know they work?',
       csv: 'Download data (CSV)', newSession: 'New session', backToBoard: 'Back to board',
       // errors
       e_illegal: 'The board changed in the meantime — choose again.', e_conflict: 'Someone was faster — the board was updated.',
@@ -110,8 +103,6 @@
       l_wipChange: 'Facilitator set the WIP limit of {col} to {wip}',
       k_wait: 'Time waiting in queues (85%)', k_fe: 'Flow efficiency', k_ctUrgent: 'Cycle time (85%) · urgent', k_ctStd: 'Cycle time (85%) · standard', k_urgentDone: 'Urgent tasks finished',
       wipChanged: 'WIP limits changed during round 2:', allTasks: 'all tasks', urgentTasks: 'urgent tasks',
-      q7: 'What happened to the standard work whenever an urgent task appeared? What does that cost in your real work?',
-      q8: 'Where did tasks wait the longest? What would shorten that waiting time?',
       footer: 'Inspired by Featureban, a game by Mike Burrows.'
     },
     pl: {
@@ -177,13 +168,6 @@
       k_wip85: 'Praca w toku – WIP (85%)', k_tp: 'Przepustowość / dzień', k_wipEnd: 'Nieukończone na koniec', k_helped: 'Zadania z pomocą',
       days_u: 'dni', nPlayers: 'graczy: {n}', r1: 'Runda 1', r2: 'Runda 2', noWip: 'bez limitów WIP', withWip: 'WIP {dev}/{test}',
       cfd: 'Skumulowany przepływ (CFD)', ctDist: 'Rozkład czasu cyklu', ctAxis: 'czas cyklu (dni)', tasksAxis: 'zadania',
-      questions: 'Pytania do omówienia',
-      q1: 'Jak się czuliście, zaczynając nowe zadania w rundzie 1? Co stało się z tablicą?',
-      q2: 'Co się zmieniło, gdy limity WIP zmusiły was, by przestać zaczynać?',
-      q3: 'Porównajcie WIP, przepustowość i czas cyklu w obu rundach. Widać prawo Little\'a?',
-      q4: 'Jak blokady wpłynęły na każdą z rund? Kto je usuwał?',
-      q5: 'Co skłoniło was do pomagania innym w rundzie 2? Jak to wyglądałoby w waszym zespole?',
-      q6: 'Jakie limity WIP wypróbowalibyście na swojej tablicy i po czym poznacie, że działają?',
       csv: 'Pobierz dane (CSV)', newSession: 'Nowa sesja', backToBoard: 'Wróć do tablicy',
       e_illegal: 'Tablica zmieniła się w międzyczasie — wybierz ponownie.', e_conflict: 'Ktoś był szybszy — tablica została zaktualizowana.',
       e_notYourTurn: 'To jeszcze nie twój ruch.', e_alreadyRolled: 'Już rzucałeś/-aś dzisiaj.', e_noSession: 'Nie znaleziono sesji.',
@@ -212,8 +196,6 @@
       l_wipChange: 'Prowadzący ustawia limit WIP dla: {col} na {wip}',
       k_wait: 'Czas oczekiwania w kolejkach (85%)', k_fe: 'Efektywność przepływu', k_ctUrgent: 'Czas cyklu (85%) · pilne', k_ctStd: 'Czas cyklu (85%) · standardowe', k_urgentDone: 'Ukończone pilne zadania',
       wipChanged: 'Zmiany limitów WIP w rundzie 2:', allTasks: 'wszystkie zadania', urgentTasks: 'pilne zadania',
-      q7: 'Co działo się ze standardową pracą, gdy pojawiało się pilne zadanie? Ile to kosztuje w waszej prawdziwej pracy?',
-      q8: 'Gdzie zadania czekały najdłużej? Co skróciłoby ten czas oczekiwania?',
       footer: 'Na podstawie gry Featureban autorstwa Mike\'a Burrowsa.'
     }
   };
@@ -898,7 +880,6 @@
     if (anyUrgent) kp += cmp(t('k_ctUrgent'), m1 && m1.p85CtUrgent, m2 && m2.p85CtUrgent, t('days_u'), true) +
       cmp(t('k_ctStd'), m1 && m1.p85CtStandard, m2 && m2.p85CtStandard, t('days_u'), true) +
       cmp(t('k_urgentDone'), m1 && m1.urgentFinished, m2 && m2.urgentFinished, '', null, 1);
-    var qs = ['q1', 'q2', 'q3', 'q4', 'q5'].concat(queues ? ['q8'] : [], anyUrgent ? ['q7'] : [], ['q6']);
     var html = '<div class="results"><div class="row" style="flex-wrap:wrap"><h1 style="flex:1 1 auto">' + t('debriefTitle') + '</h1>' +
       '<div style="flex:0 0 auto;display:flex;gap:8px"><button class="btn ghost sm" data-results="0">' + t('backToBoard') + '</button>' +
       (S.fac ? '<button class="btn ghost sm" data-csv="1">' + t('csv') + '</button>' : '') + '</div></div>' +
@@ -913,8 +894,7 @@
       '<div class="panel chart"><h3>' + t('cfd') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? cfdSvg(m2, maxY, maxX) + cfdLegend(m2.columns) : '') + '</div>' +
       '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r1') + '</span></h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1), m1.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
       '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2), m2.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
-      '</div><div class="panel" style="margin-top:14px"><h3>' + t('questions') + '</h3><ol class="debrief-q">' +
-      qs.map(function (q) { return '<li>' + t(q) + '</li>'; }).join('') + '</ol></div></div>';
+      '</div></div>';
     setHTML($app, html);
   }
   function histLegend() {
