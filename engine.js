@@ -47,8 +47,8 @@
 
   function defaultColumns() {
     return [
-      { id: 'dev', type: 'active', name: '', wip: 3 },
-      { id: 'test', type: 'active', name: '', wip: 2 }
+      { id: 'dev', type: 'active', kind: 'execution', name: '', wip: 3 },
+      { id: 'test', type: 'active', kind: 'execution', name: '', wip: 2 }
     ];
   }
 
@@ -95,7 +95,9 @@
       if (s.wip) s.columns.forEach(function (c) { if (s.wip[c.id] != null) c.wip = s.wip[c.id]; });
     }
     s.columns = arr(s.columns).map(function (c) {
-      c.name = c.name || ''; c.wip = parseInt(c.wip, 10) || 0; return c;
+      c.name = c.name || ''; c.wip = parseInt(c.wip, 10) || 0;
+      if (c.type === 'active' && c.kind !== 'analysis') c.kind = 'execution';
+      return c;
     });
     if (s.urgentPct == null) s.urgentPct = 0;
     delete s.urgentExpedite;
@@ -382,6 +384,13 @@
         var c = colById(g, id); if (c) c.name = String(patch.colNames[id]).trim().slice(0, 28);
       });
     }
+    if (patch.colKinds) {
+      // Analysis / Execution only changes chart colours, so it can be changed any time.
+      Object.keys(patch.colKinds).forEach(function (id) {
+        var c = colById(g, id); if (!c || c.type !== 'active') return;
+        c.kind = patch.colKinds[id] === 'analysis' ? 'analysis' : 'execution';
+      });
+    }
     if (patch.wip) {
       Object.keys(patch.wip).forEach(function (id) {
         var c = colById(g, id); if (!c) return;
@@ -409,7 +418,7 @@
     var cols = columns(g);
     if (cols.filter(function (c) { return c.type === 'active'; }).length >= MAX_ACTIVE) return fail('maxColumns');
     s_seq(g);
-    cols.push({ id: 'a' + g.settings.colSeq, type: 'active', name: '', wip: 2 });
+    cols.push({ id: 'a' + g.settings.colSeq, type: 'active', kind: 'execution', name: '', wip: 2 });
     return ok();
   }
 

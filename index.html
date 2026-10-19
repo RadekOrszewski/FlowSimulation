@@ -303,6 +303,27 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 .av-opt:disabled{opacity:.28;filter:grayscale(1)}
 .av-preview{display:flex;align-items:center;gap:12px;margin:10px 0 2px}
 .av-preview b{font-size:15px}
+
+/* ---------- debrief: round comparison (v4) ---------- */
+.cmp-panel{margin:16px 0;padding:6px 8px;overflow-x:auto}
+.cmp-table{width:100%;border-collapse:collapse;font-size:14px}
+.cmp-table th,.cmp-table td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:baseline}
+.cmp-table tbody tr:last-child th,.cmp-table tbody tr:last-child td{border-bottom:0}
+.cmp-table thead th{font-weight:600;border-bottom:2px solid var(--navy);vertical-align:bottom}
+.cmp-table thead th:first-child,.cmp-table thead th.chg{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.cmp-table thead th small{display:block;font-size:11.5px;font-weight:400;color:var(--muted);margin-top:3px}
+.cmp-table tbody th{font-weight:500;color:#344054;width:38%}
+.cmp-table td{font-family:var(--mono);font-size:20px;font-weight:500;width:22%;white-space:nowrap}
+.cmp-table td small{font-size:12px;color:var(--muted);font-weight:400}
+.cmp-table td.chg{width:18%;font-size:13px}
+.cmp-table .delta{font-family:var(--mono);font-size:12px;padding:2px 7px;border-radius:6px;background:#f1f3f5;color:#495057}
+.cmp-table .delta.good{background:#d3f9d8;color:#2b8a3e}.cmp-table .delta.bad{background:#ffe3e3;color:#c92a2a}
+.cmp-table tbody tr:hover{background:#faf9f5}
+.rh{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:#eef0f4;color:var(--navy)}
+.rh.r2{background:var(--yellow);color:var(--navy)}
+.rounds-h{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;font-size:13px;color:var(--muted)}
+.chart h3 .mob{display:none}
+@media (max-width:860px){.chart h3 .mob{display:inline}.rounds-h{display:none}.cmp-table td{font-size:16px}}
 </style>
 </head>
 <body>

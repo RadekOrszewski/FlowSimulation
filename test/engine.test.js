@@ -237,6 +237,16 @@ test('avatars: stored per player, one avatar per player', () => {
   assert.strictEqual(g.players.p3.avatar, '');
 });
 
+test('work steps can be marked Analysis or Execution at any time', () => {
+  const g = setup(2);
+  assert.deepStrictEqual(E.columns(g).map(c => c.kind), ['execution', 'execution']);
+  E.startRound(g, 1);
+  assert.ok(E.updateSettings(g, { colKinds: { dev: 'analysis' } }).ok);
+  assert.strictEqual(E.colById(g, 'dev').kind, 'analysis');
+  E.updateSettings(g, { colKinds: { dev: 'nonsense' } });
+  assert.strictEqual(E.colById(g, 'dev').kind, 'execution');
+});
+
 test('sessions saved by version 1 are upgraded', () => {
   const g = E.newGame('f'); delete g.settings.columns; g.settings.wip = { dev: 4, test: 5 };
   E.norm(g);

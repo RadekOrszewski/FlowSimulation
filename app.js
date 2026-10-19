@@ -94,6 +94,8 @@
       boardSetup: 'Board', setupBtn: 'Board & rules setup', renameBtn: 'Rename columns',
       setupTitle: 'Board & rules setup', columnsTitle: 'Columns & WIP limits',
       colType: 'Type', colNameH: 'Name', typeBacklog: 'Backlog', typeDone: 'Done', typeActive: 'Work step', typeQueue: 'Queue',
+      kind_execution: '▶ Execution', kind_analysis: '▶ Analysis', kindHint: 'Sets the colour in the cumulative flow diagram (Analysis red, Execution orange). Can be changed any time.',
+      measure: 'Measure', change: 'Change',
       addStep: 'Add work step', addQueue: 'Add queue between {a} and {b}', removeCol: 'Remove column',
       queueHelp: 'A queue is a passive column between two work steps (e.g. “Ready for Testing”). It makes waiting time visible: tasks sit there until someone pulls them into the next step.',
       structLocked: 'The board structure is fixed once round 1 has started, so both rounds can be compared. Names and WIP limits can still be changed.',
@@ -193,6 +195,8 @@
       boardSetup: 'Tablica', setupBtn: 'Ustawienia tablicy i zasad', renameBtn: 'Zmień nazwy kolumn',
       setupTitle: 'Ustawienia tablicy i zasad', columnsTitle: 'Kolumny i limity WIP',
       colType: 'Typ', colNameH: 'Nazwa', typeBacklog: 'Backlog', typeDone: 'Gotowe', typeActive: 'Etap pracy', typeQueue: 'Kolejka',
+      kind_execution: '▶ Realizacja', kind_analysis: '▶ Analiza', kindHint: 'Ustala kolor na diagramie skumulowanego przepływu (Analiza czerwona, Realizacja pomarańczowa). Można zmienić w każdej chwili.',
+      measure: 'Miara', change: 'Zmiana',
       addStep: 'Dodaj etap pracy', addQueue: 'Dodaj kolejkę między: {a} i {b}', removeCol: 'Usuń kolumnę',
       queueHelp: 'Kolejka to pasywna kolumna między dwoma etapami pracy (np. „Czeka na testy”). Pokazuje czas oczekiwania: zadania czekają tam, aż ktoś pobierze je do kolejnego etapu.',
       structLocked: 'Po starcie rundy 1 układ tablicy jest zablokowany, żeby obie rundy dało się porównać. Nazwy i limity WIP nadal można zmieniać.',
@@ -735,7 +739,9 @@
     cols.forEach(function (c, i) {
       var isQ = c.type === 'passive';
       var rm = lobby && (isQ || actives > 1) ? '<button class="x" data-rmcol="' + c.id + '" title="' + esc(t('removeCol')) + '">✕</button>' : '<span></span>';
-      rows += '<div class="srow' + (isQ ? ' q' : '') + '"><span class="stype">' + (isQ ? '⋯ ' + t('typeQueue') : '▶ ' + t('typeActive')) + '</span>' + nameInput('col', c.id) +
+      var kindSel = '<select data-set="colKind.' + c.id + '" title="' + esc(t('kindHint')) + '">' +
+        ['execution', 'analysis'].map(function (k) { return '<option value="' + k + '"' + ((c.kind || 'execution') === k ? ' selected' : '') + '>' + t('kind_' + k) + '</option>'; }).join('') + '</select>';
+      rows += '<div class="srow' + (isQ ? ' q' : '') + '"><span class="stype">' + (isQ ? '⋯ ' + t('typeQueue') : kindSel) + '</span>' + nameInput('col', c.id) +
         '<span class="swip"><input type="number" min="0" max="30" value="' + (c.wip || 0) + '" data-set="wip.' + c.id + '" title="' + esc(t('wipR2')) + '"></span>' + rm + '</div>';
       var next = cols[i + 1];
       if (lobby && !isQ && next && next.type === 'active') {
@@ -769,10 +775,23 @@
   }
 
   // ================================================================ charts
-  var ACTIVE_COLORS = ['#fadd10', '#4c6ef5', '#f08c00', '#12b886'];
+  // CFD colours: Done green, Execution orange, Analysis red, queues (awaiting) grey.
+  // Several columns of the same kind get shades of the same colour.
+  var CFD_SHADES = {
+    execution: ['#d9480f', '#ffa94d', '#ffd8a8', '#f76707'],
+    analysis: ['#c92a2a', '#ff8787', '#ffc9c9', '#f03e3e'],
+    passive: ['#868e96', '#adb5bd', '#ced4da', '#dee2e6']
+  };
+  var CFD_DONE = '#2f9e44';
+  function colKind(c) {
+    if (c.type === 'passive') return 'passive';
+    var cur = S.game && E.colById(S.game, c.id);   // kind can be changed after the round
+    var k = (cur && cur.kind) || c.kind;
+    return k === 'analysis' ? 'analysis' : 'execution';
+  }
   function colColors(cols) {
-    var out = { done: '#16213e' }, i = 0;
-    cols.forEach(function (c) { out[c.id] = c.type === 'passive' ? '#c3c8d4' : ACTIVE_COLORS[i++ % ACTIVE_COLORS.length]; });
+    var out = { done: CFD_DONE }, used = { execution: 0, analysis: 0, passive: 0 };
+    cols.forEach(function (c) { var k = colKind(c), sh = CFD_SHADES[k]; out[c.id] = sh[used[k]++ % sh.length]; });
     return out;
   }
   function cfdMax(ms) { var m = 4; ms.forEach(function (x) { if (x) x.days.forEach(function (d) { m = Math.max(m, d.wip + d.done); }); }); return m; }
@@ -839,12 +858,13 @@
         var pct = a ? Math.round((b - a) / a * 100) : null;
         d = '<span class="delta ' + (better == null ? '' : better ? 'good' : 'bad') + '">' + (b > a ? '+' : '') + (pct != null ? pct + '%' : fmt(b - a)) + '</span>';
       }
-      return '<div class="kpi"><div class="l">' + label + '</div><div class="v"><span>R1</span><b>' + fmt(a, dec) + '</b><span>R2</span><b>' + fmt(b, dec) + '</b>' + (unit ? '<span>' + unit + '</span>' : '') + d + '</div></div>';
+      var u = unit ? ' <small>' + unit + '</small>' : '';
+      return '<tr><th scope="row">' + label + '</th><td>' + fmt(a, dec) + (a != null ? u : '') + '</td><td>' + fmt(b, dec) + (b != null ? u : '') + '</td><td class="chg">' + d + '</td></tr>';
     }
     function pctOf(m, k) { return m && m[k] != null ? m[k] * 100 : null; }
-    function roundDesc(m, n) {
-      if (!m) return '';
-      var s = t('r' + n) + ': ' + (m.wipLimits ? 'WIP ' + m.columns.map(function (c) { return c.wip > 0 ? c.wip : '∞'; }).join(' / ') : t('noWip'));
+    function roundSub(m) {
+      if (!m) return '–';
+      var s = m.wipLimits ? 'WIP ' + m.columns.map(function (c) { return c.wip > 0 ? c.wip : '∞'; }).join(' / ') : t('noWip');
       if (m.urgentPct) s += ', ' + t('urgentShort').toLowerCase() + ' ' + m.urgentPct + '%';
       return s;
     }
@@ -871,12 +891,17 @@
     var html = '<div class="results"><div class="row" style="flex-wrap:wrap"><h1 style="flex:1 1 auto">' + t('debriefTitle') + '</h1>' +
       '<div style="flex:0 0 auto;display:flex;gap:8px"><button class="btn ghost sm" data-results="0">' + t('backToBoard') + '</button>' +
       (S.fac ? '<button class="btn ghost sm" data-csv="1">' + t('csv') + '</button>' : '') + '</div></div>' +
-      '<p class="muted">' + [roundDesc(m1, 1), roundDesc(m2, 2), t('nPlayers', { n: E.playerList(g).length })].filter(Boolean).join(' · ') + '</p>' + wipChanges +
-      '<div class="kpis">' + kp + '</div><div class="charts">' +
-      '<div class="panel chart"><h3>' + t('cfd') + ' · ' + t('r1') + '</h3>' + (m1 ? cfdSvg(m1, maxY, maxX) + cfdLegend(m1.columns) : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('cfd') + ' · ' + t('r2') + '</h3>' + (m2 ? cfdSvg(m2, maxY, maxX) + cfdLegend(m2.columns) : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('ctDist') + ' · ' + t('r1') + '</h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1), m1.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('ctDist') + ' · ' + t('r2') + '</h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2), m2.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
+      '<p class="muted">' + t('nPlayers', { n: E.playerList(g).length }) + '</p>' + wipChanges +
+      '<div class="panel cmp-panel"><table class="cmp-table"><thead><tr><th scope="col">' + t('measure') + '</th>' +
+        '<th scope="col"><span class="rh r1">' + t('r1') + '</span><small>' + esc(roundSub(m1)) + '</small></th>' +
+        '<th scope="col"><span class="rh r2">' + t('r2') + '</span><small>' + esc(roundSub(m2)) + '</small></th>' +
+        '<th scope="col" class="chg">' + t('change') + '</th></tr></thead><tbody>' + kp + '</tbody></table></div>' +
+      '<div class="rounds-h"><div><span class="rh r1">' + t('r1') + '</span> ' + esc(roundSub(m1)) + '</div><div><span class="rh r2">' + t('r2') + '</span> ' + esc(roundSub(m2)) + '</div></div>' +
+      '<div class="charts">' +
+      '<div class="panel chart"><h3>' + t('cfd') + '<span class="mob"> · ' + t('r1') + '</span></h3>' + (m1 ? cfdSvg(m1, maxY, maxX) + cfdLegend(m1.columns) : '') + '</div>' +
+      '<div class="panel chart"><h3>' + t('cfd') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? cfdSvg(m2, maxY, maxX) + cfdLegend(m2.columns) : '') + '</div>' +
+      '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r1') + '</span></h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1), m1.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
+      '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2), m2.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
       '</div><div class="panel" style="margin-top:14px"><h3>' + t('questions') + '</h3><ol class="debrief-q">' +
       qs.map(function (q) { return '<li>' + t(q) + '</li>'; }).join('') + '</ol></div></div>';
     setHTML($app, html);
@@ -960,6 +985,7 @@
     var dot = k.indexOf('.'), head = dot < 0 ? k : k.slice(0, dot), id = dot < 0 ? null : k.slice(dot + 1);
     if (head === 'wip') { patch.wip = {}; patch.wip[id] = val; }
     else if (head === 'colName') { patch.colNames = {}; patch.colNames[id] = val; }
+    else if (head === 'colKind') { patch.colKinds = {}; patch.colKinds[id] = val; }
     else if (head === 'names') { patch.names = {}; patch.names[id] = val; }
     else patch[k] = val;
     act(function (g) { return E.updateSettings(g, patch); }).then(function () {

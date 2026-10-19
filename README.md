@@ -5,7 +5,7 @@ A Featureban-style Kanban simulation for **online workshops**. Every participant
 1. **Round 1 – no WIP limits.** Players start work freely; the board fills up, blocked tasks pile up, little gets finished.
 2. **Round 2 – with WIP limits.** Starting is impossible while a column is full, so players are pushed to *stop starting, start finishing* and help each other.
 
-A debrief screen then compares both rounds side by side (tasks finished, cycle time and WIP as 85th percentiles, throughput, cumulative flow diagrams, cycle-time histograms, discussion questions; plus waiting time and flow efficiency when the board has queues, and urgent vs standard cycle time when urgent tasks were used; the cycle-time histograms mark the 85% line) and lets the facilitator download the data as CSV.
+A debrief screen then compares both rounds side by side in a table, one row per measure (tasks finished, cycle time and WIP as 85th percentiles, throughput, cumulative flow diagrams, cycle-time histograms, discussion questions; plus waiting time and flow efficiency when the board has queues, and urgent vs standard cycle time when urgent tasks were used; the cycle-time histograms mark the 85% line) and lets the facilitator download the data as CSV.
 
 Inspired by Featureban, a game by Mike Burrows, using the dice variant of the rules.
 
@@ -84,6 +84,7 @@ Commit, wait a minute, reload the page: the red **TEST MODE** label disappears a
    - rename any column, including Backlog and Done (names can be changed at any time, also mid-game);
    - add work steps (up to 4) or remove them;
    - add a **queue** between two work steps;
+   - mark each work step as **Analysis** or **Execution** (only affects colours in the cumulative flow diagram: Analysis red, Execution orange, queues grey, Done green; can be changed any time);
    - set **WIP limits** per column for round 2 (*Apply* fills in a suggestion that scales with the number of players; 0 = no limit);
    - set the **share of urgent tasks** (0–100 %). Urgent tasks are marked and kept at the top of their column, are not forced to go first, and always respect WIP limits.
    The board layout is locked once round 1 starts, so both rounds are played on the same board and can be compared.
