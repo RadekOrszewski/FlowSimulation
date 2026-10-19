@@ -138,11 +138,10 @@ test('WIP suggestion scales with group size', () => {
 test('urgent tasks: percentage drives the next card; players are not forced to do them first', () => {
   const g = setup(1, { urgentPct: 100 });
   E.startRound(g, 1);
-  assert.strictEqual(g.nextUrgent, true);
+  assert.ok(E.backlogTasks(g).every(b => b.urgent));
   E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'start' });
   const u = cardsOf(g, 'p1')[0];
   assert.ok(u.urgent);
-  g.settings.urgentPct = 0; g.nextUrgent = false;
   E.roll(g, 'p1', 3);
   const l = E.legalActions(g, 'p1');
   assert.ok(l.some(a => a.type === 'start'), 'starting is allowed although an urgent task could move');
@@ -169,7 +168,7 @@ test('urgent tasks never exceed WIP limits', () => {
   const g = setup(2, { wip: { dev: 1, test: 1 }, urgentPct: 100 });
   toRound2(g);
   E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'start' });
-  assert.ok(g.nextUrgent);
+  assert.ok(E.backlogTasks(g)[0].urgent);
   E.roll(g, 'p2', 3);
   assert.ok(!E.legalActions(g, 'p2').some(a => a.type === 'start'), 'urgent card cannot be started into a full column');
   // an urgent task in Development cannot move into a full Testing column either
@@ -186,8 +185,9 @@ test('urgent tasks never exceed WIP limits', () => {
 
 test('0% urgent never produces urgent tasks', () => {
   const g = setup(4); E.startRound(g, 1);
-  for (let i = 0; i < 200; i++) { E.updateSettings(g, {}); }
-  assert.strictEqual(g.nextUrgent, false);
+  for (let i = 0; i < 20; i++) E.addBacklog(g);
+  assert.ok(E.backlogTasks(g).length > 100);
+  assert.ok(E.backlogTasks(g).every(b => !b.urgent));
 });
 
 test('metrics: queue waiting time, flow efficiency, urgent vs standard', () => {
@@ -213,18 +213,41 @@ test('metrics: queue waiting time, flow efficiency, urgent vs standard', () => {
   assert.ok(m.days.find(d => d.day === 3).c[q] === 1);
 });
 
-test('backlog shows the next 5 tasks and refills as tasks are started', () => {
+test('backlog: 10 tasks per round, no automatic refill, facilitator adds 10', () => {
   const g = setup(2, { urgentPct: 50 });
   E.startRound(g, 1);
-  assert.strictEqual(E.upcomingTasks(g).length, 5);
-  assert.deepStrictEqual(E.upcomingTasks(g).map(x => x.no), [1, 2, 3, 4, 5]);
-  const preview = E.upcomingTasks(g)[0];
+  assert.deepStrictEqual(E.backlogTasks(g).map(x => x.no), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'start' });
+  assert.strictEqual(E.backlogTasks(g).length, 9, 'not refilled');
+  assert.ok(E.addBacklog(g).ok);
+  assert.strictEqual(E.backlogTasks(g).length, 19);
+  assert.deepStrictEqual(E.backlogTasks(g).slice(-2).map(x => x.no), [19, 20]);
+  const g2 = setup(1); assert.strictEqual(E.addBacklog(g2).ok, false, 'only during a round');
+});
+
+test('players pick which backlog task to start', () => {
+  const g = setup(2, { urgentPct: 0 });
+  E.startRound(g, 1);
+  E.backlogTasks(g)[6].urgent = true;
+  E.roll(g, 'p1', 3);
+  assert.ok(E.apply(g, 'p1', { type: 'start', no: 7 }).ok);
   const c = cardsOf(g, 'p1')[0];
-  assert.strictEqual(c.no, preview.no);
-  assert.strictEqual(!!c.urgent, preview.urgent, 'started task matches the previewed card');
-  assert.deepStrictEqual(E.upcomingTasks(g).map(x => x.no), [2, 3, 4, 5, 6], 'a new task is added at the bottom');
-  assert.strictEqual(g.nextUrgent, E.upcomingTasks(g)[0].urgent);
+  assert.strictEqual(c.no, 7); assert.ok(c.urgent, 'picked the urgent one');
+  assert.ok(!E.backlogTasks(g).some(b => b.no === 7));
+  E.roll(g, 'p2', 3);
+  assert.strictEqual(E.apply(g, 'p2', { type: 'start', no: 7 }).error, 'taskGone', 'cannot start a task someone already took');
+  assert.ok(E.apply(g, 'p2', { type: 'start', no: 1 }).ok);
+});
+
+test('empty backlog: starting is impossible, players help or end their turn', () => {
+  const g = setup(2);
+  E.startRound(g, 1);
+  g.backlog = [];
+  E.roll(g, 'p1', 1);   // must block (nothing) then start (impossible)
+  assert.ok(g.turns.p1.done, 'turn ends: nothing to start, nothing to help');
+  E.addBacklog(g);
+  E.roll(g, 'p2', 3);
+  assert.ok(E.legalActions(g, 'p2').some(a => a.type === 'start'));
 });
 
 test('avatars: stored per player, one avatar per player', () => {
@@ -283,10 +306,16 @@ function fuzz(games) {
         for (const p of ids) {
           if (!E.canAct(g, p)) continue;
           if (!g.turns[p] || !g.turns[p].roll) { E.roll(g, p); continue; }
+          if (Math.random() < 0.03) { E.addBacklog(g); if (g.phase !== 'playing') break; }   // facilitator tops up
           const l = E.legalActions(g, p);
           if (!l.length) continue;
           const touched = Object.assign({}, g.turns[p].touched);
-          const a = l[Math.floor(Math.random() * l.length)];
+          const a = Object.assign({}, l[Math.floor(Math.random() * l.length)]);
+          if (a.type === 'start') {
+            const bl = E.backlogTasks(g);
+            assert.ok(bl.length > 0, 'start offered only when the backlog has tasks');
+            a.no = bl[Math.floor(Math.random() * bl.length)].no;   // players pick any task
+          }
           if (a.card) assert.ok(!touched[a.card], 'same task twice in a day');
           if (a.type === 'block') assert.ok(E.isActive(g, g.cards[a.card].col), 'block only in active columns');
           assert.ok(E.apply(g, p, a).ok);

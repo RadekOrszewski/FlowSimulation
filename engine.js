@@ -72,8 +72,7 @@
       players: {},
       cards: {},
       nextNo: 1,
-      nextUrgent: false,       // = upcoming[0], kept for older clients
-      upcoming: [],            // urgent flags of the next BACKLOG_SHOW backlog tasks
+      backlog: [],             // tasks waiting in the backlog: [{ no, urgent }]
       seq: 0,
       turns: {},
       history: {}
@@ -101,8 +100,13 @@
     });
     if (s.urgentPct == null) s.urgentPct = 0;
     delete s.urgentExpedite;
-    g.upcoming = arr(g.upcoming).map(function (u) { return !!u; });
-    if (!g.upcoming.length && g.phase === 'playing') { g.upcoming = [!!g.nextUrgent]; fillBacklog(g); }
+    if (g.backlog == null && g.upcoming) {
+      // sessions from the auto-refilling version: keep the previewed tasks
+      g.backlog = arr(g.upcoming).map(function (u, i) { return { no: g.nextNo + i, urgent: !!u }; });
+      g.nextNo += g.backlog.length;
+    }
+    delete g.upcoming; delete g.nextUrgent;
+    g.backlog = arr(g.backlog).map(function (b) { return { no: parseInt(b.no, 10), urgent: !!b.urgent }; });
     Object.keys(g.turns).forEach(function (k) {
       var t = g.turns[k];
       t.steps = arr(t.steps);
@@ -202,7 +206,7 @@
       return mine.filter(function (c) { return !c.blocked && isActive(g, c.col); })
         .map(function (c) { return { type: 'block', card: c.id }; });
     }
-    var canStart = hasCapacity(g, firstCol(g));
+    var canStart = hasCapacity(g, firstCol(g)) && backlogTasks(g).length > 0;
     if (step === 'start') return canStart ? [{ type: 'start' }] : [];
     // step === 'any'
     var acts = cardActions(g, mine, false);
@@ -236,20 +240,29 @@
     return ['any', 'any'];
   }
 
-  // The backlog always shows the next BACKLOG_SHOW tasks; when one is
-  // started, a new one is added at the bottom.
-  var BACKLOG_SHOW = 5;
+  // Backlog: each round starts with BACKLOG_START tasks. It is never refilled
+  // automatically; the facilitator adds BACKLOG_ADD more when they decide to.
+  // Players pick which backlog task to start (urgent or not).
+  var BACKLOG_START = 10, BACKLOG_ADD = 10, BACKLOG_MAX = 200;
   function rollUrgent(g) {
     var p = Math.max(0, Math.min(100, Number(g.settings.urgentPct) || 0));
     return p > 0 && Math.random() * 100 < p;
   }
-  function fillBacklog(g, reset) {
-    if (reset || !Array.isArray(g.upcoming)) g.upcoming = [];
-    while (g.upcoming.length < BACKLOG_SHOW) g.upcoming.push(rollUrgent(g));
-    g.nextUrgent = g.upcoming[0];
+  function pushTasks(g, n) {
+    if (!Array.isArray(g.backlog)) g.backlog = [];
+    for (var i = 0; i < n && g.backlog.length < BACKLOG_MAX; i++) g.backlog.push({ no: g.nextNo++, urgent: rollUrgent(g) });
   }
-  function upcomingTasks(g) {
-    return (g.upcoming || []).map(function (u, i) { return { no: g.nextNo + i, urgent: !!u }; });
+  function backlogTasks(g) { return g.phase === 'playing' ? (g.backlog || []) : []; }
+
+  function addBacklog(g, n) {
+    if (g.phase !== 'playing') return fail('badPhase');
+    var before = g.backlog.length;
+    pushTasks(g, n || BACKLOG_ADD);
+    var added = g.backlog.length - before;
+    if (!added) return fail('backlogFull');
+    var events = [{ t: 'backlogAdd', n: added }];
+    settleAll(g, events);   // players who had nothing to do may have an option now
+    return ok(events);
   }
 
   // ---------- day / turn flow ----------
@@ -470,7 +483,8 @@
     g.round = n;
     g.day = 1;
     g.turns = {};
-    fillBacklog(g, true);
+    g.backlog = [];
+    pushTasks(g, BACKLOG_START);
     var d0 = { c: {}, done: 0, blocked: 0, urgent: 0 };
     columns(g).forEach(function (c) { d0.c[c.id] = 0; });
     g.history['r' + n] = {
@@ -505,14 +519,20 @@
     var events = [];
     var card;
     if (act.type === 'start') {
-      var id = 'c' + g.round + '_' + g.nextNo;
+      // the player picks which backlog task to start; default: the top one
+      var bi = 0;
+      if (action.no != null) {
+        bi = -1;
+        for (var k = 0; k < g.backlog.length; k++) if (g.backlog[k].no === Number(action.no)) bi = k;
+        if (bi < 0) return fail('taskGone');
+      }
+      var task = g.backlog.splice(bi, 1)[0];
+      var id = 'c' + g.round + '_' + task.no;
       card = {
-        id: id, no: g.nextNo++, owner: pid, col: firstCol(g), blocked: false, round: g.round,
-        startDay: g.day, urgent: !!g.upcoming[0], path: [{ c: firstCol(g), d: g.day }]
+        id: id, no: task.no, owner: pid, col: firstCol(g), blocked: false, round: g.round,
+        startDay: g.day, urgent: !!task.urgent, path: [{ c: firstCol(g), d: g.day }]
       };
       g.cards[id] = card;
-      g.upcoming.shift();
-      fillBacklog(g);
       events.push({ t: 'start', pid: pid, no: card.no, urgent: card.urgent });
     } else {
       card = g.cards[act.card];
@@ -632,8 +652,8 @@
   }
 
   var api = {
-    PALETTE: PALETTE, MAX_ACTIVE: MAX_ACTIVE, BACKLOG_SHOW: BACKLOG_SHOW,
-    upcomingTasks: upcomingTasks, avatarTaken: avatarTaken,
+    PALETTE: PALETTE, MAX_ACTIVE: MAX_ACTIVE, BACKLOG_START: BACKLOG_START, BACKLOG_ADD: BACKLOG_ADD,
+    backlogTasks: backlogTasks, addBacklog: addBacklog, avatarTaken: avatarTaken,
     newGame: newGame, norm: norm, clone: clone,
     columns: columns, colById: colById, nextCol: nextCol, firstCol: firstCol, isActive: isActive, hasPassive: hasPassive,
     playerList: playerList, roundCards: roundCards, countIn: countIn,

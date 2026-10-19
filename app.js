@@ -17,7 +17,8 @@
       notFound: 'Session <b>{code}</b> not found.', backHome: 'Back to start',
       joinAs: 'Join session {code}', yourName: 'Your name', namePh: 'e.g. Anna', enter: 'Enter the board',
       pickAvatar: 'Pick your avatar', avatarTakenHint: 'Greyed-out avatars are already taken.', e_avatarTaken: 'Someone just took that avatar — pick another one.',
-      blNext: 'next', blUpNext: 'Up next', blIdle: 'New tasks appear here when the round starts.',
+      blIdle: 'Tasks appear here when the round starts.', blHint: 'Drag a task onto {col} — or click it.', blEmpty: 'The backlog is empty. The facilitator can add more tasks.',
+      addTasks: '+ Add {n} tasks to the backlog', inBacklog: '{n} tasks in the backlog', l_backlogAdd: 'Facilitator added {n} tasks to the backlog', e_taskGone: 'Someone else just took that task — pick another one.', e_backlogFull: 'The backlog is full.',
       reclaim: 'Rejoining? Pick yourself:', orNew: 'Or join as someone new',
       session: 'Session', round: 'Round', day: 'Day', lobby: 'Lobby', of: 'of',
       copyInvite: 'Copy invite link', copied: 'Copied to clipboard',
@@ -31,8 +32,8 @@
       rollPrompt: 'Roll the die', rollSub: 'Click the die to see what you can do today.',
       waitFor: 'Waiting for {name} to play…', doneDay: 'Done for day {day} ✓', doneSub: 'Waiting for the others ({n} of {m} finished).',
       step_block: 'Block one of your tasks — click a highlighted card.',
-      step_start: 'Start a new task — use the button in Backlog.',
-      step_any: 'Move, unblock or start: click a highlighted card or start a new task.',
+      step_start: 'Start a new task — drag one from the Backlog.',
+      step_any: 'Move, unblock or start: click a highlighted card or drag a task from the Backlog.',
       step_help: 'You can\'t act on your own tasks — help a teammate: move or unblock one of their tasks.',
       actionN: 'Action {n}', blockStep: 'Block', startStep: 'Start',
       roundOver: 'Round {n} finished', roundOverSub: 'Have a look at the results while the facilitator prepares the next step.',
@@ -124,7 +125,8 @@
       notFound: 'Nie znaleziono sesji <b>{code}</b>.', backHome: 'Wróć na start',
       joinAs: 'Dołącz do sesji {code}', yourName: 'Twoje imię', namePh: 'np. Anna', enter: 'Wejdź na tablicę',
       pickAvatar: 'Wybierz awatar', avatarTakenHint: 'Wyszarzone awatary są już zajęte.', e_avatarTaken: 'Ktoś właśnie wybrał ten awatar — wybierz inny.',
-      blNext: 'następne', blUpNext: 'Kolejne zadania', blIdle: 'Nowe zadania pojawią się tu po rozpoczęciu rundy.',
+      blIdle: 'Zadania pojawią się tu po rozpoczęciu rundy.', blHint: 'Przeciągnij zadanie do: {col} — albo kliknij je.', blEmpty: 'Backlog jest pusty. Prowadzący może dodać zadania.',
+      addTasks: '+ Dodaj {n} zadań do backlogu', inBacklog: 'Zadań w backlogu: {n}', l_backlogAdd: 'Prowadzący dodaje {n} zadań do backlogu', e_taskGone: 'Ktoś właśnie wziął to zadanie — wybierz inne.', e_backlogFull: 'Backlog jest pełny.',
       reclaim: 'Wracasz? Wybierz siebie:', orNew: 'Albo dołącz jako nowa osoba',
       session: 'Sesja', round: 'Runda', day: 'Dzień', lobby: 'Poczekalnia', of: 'z',
       copyInvite: 'Kopiuj zaproszenie', copied: 'Skopiowano',
@@ -137,8 +139,8 @@
       rollPrompt: 'Rzuć kostką', rollSub: 'Kliknij kostkę, żeby zobaczyć, co możesz dziś zrobić.',
       waitFor: 'Czekamy na ruch: {name}…', doneDay: 'Dzień {day} zakończony ✓', doneSub: 'Czekamy na pozostałych ({n} z {m} gotowych).',
       step_block: 'Zablokuj jedno ze swoich zadań — kliknij podświetloną kartę.',
-      step_start: 'Zacznij nowe zadanie — przycisk w Backlogu.',
-      step_any: 'Przesuń, odblokuj lub zacznij: kliknij podświetloną kartę albo zacznij nowe zadanie.',
+      step_start: 'Zacznij nowe zadanie — przeciągnij je z Backlogu.',
+      step_any: 'Przesuń, odblokuj lub zacznij: kliknij podświetloną kartę albo przeciągnij zadanie z Backlogu.',
       step_help: 'Nie możesz nic zrobić ze swoimi zadaniami — pomóż innej osobie: przesuń lub odblokuj jej zadanie.',
       actionN: 'Akcja {n}', blockStep: 'Blokada', startStep: 'Start',
       roundOver: 'Runda {n} zakończona', roundOverSub: 'Przyjrzyj się wynikom, a prowadzący przygotuje kolejny krok.',
@@ -512,6 +514,8 @@
   // ---------------------------------------------------------------- board
   function renderBoard() {
     var el = document.getElementById('board'); if (!el) return;
+    if (S.dragNo) { S.boardStale = true; return; }   // don't pull the card from under the player's cursor
+    S.boardStale = false;
     var g = S.game, now = Date.now(), cols = E.columns(g);
     var legal = S.me ? E.legalActions(g, S.me) : [];
     var byCard = {}; legal.forEach(function (a) { if (a.card) byCard[a.card] = a; });
@@ -519,7 +523,7 @@
     var cards = g.phase === 'lobby' ? [] : E.roundCards(g);
     var tn = S.me && g.turns[S.me];
     var myStepCanStart = tn && tn.roll && !tn.done && tn.steps.length && tn.steps[0] !== 'block';
-    var startBlockedByWip = myStepCanStart && !canStart && !E.hasCapacity(g, E.firstCol(g));
+    var startBlockedByWip = myStepCanStart && !canStart && !E.hasCapacity(g, E.firstCol(g)) && E.backlogTasks(g).length > 0;
 
     function card(c) {
       var p = g.players[c.owner] || { name: '?', color: '#dee2e6' };
@@ -542,18 +546,23 @@
       var badge = key === 'done' ? cnt : (g.round === 2 && lim ? cnt + ' / ' + lim : cnt);
       var full = lim && cnt >= lim;
       var cls = 'col' + (key === 'done' ? ' done' : '') + (type === 'passive' ? ' queue' : '') + (full ? ' full' : '');
-      return '<div class="' + cls + '"><div class="col-h"><b title="' + esc(colLabel(key)) + '">' + esc(colLabel(key)) + '</b><span class="wipb' + (g.round === 2 && lim ? ' on' : '') + (full ? ' full' : '') + '">' + badge + '</span></div>' +
+      var drop = canStart && key === E.firstCol(g);
+      return '<div class="' + cls + (drop ? ' dropzone' : '') + '"' + (drop ? ' data-drop="1"' : '') + '><div class="col-h"><b title="' + esc(colLabel(key)) + '">' + esc(colLabel(key)) + '</b><span class="wipb' + (g.round === 2 && lim ? ' on' : '') + (full ? ' full' : '') + '">' + badge + '</span></div>' +
         (type === 'passive' ? '<div class="qtag">' + t('queue') + '</div>' : '') +
         '<div class="col-b">' + (list.length ? list.map(card).join('') : '<div class="empty-col">' + t('emptyCol') + '</div>') + '</div></div>';
     }
-    var showNext = g.phase === 'playing';
-    var up = showNext ? E.upcomingTasks(g) : [];
-    var blList = up.length ? '<div class="bl-label">' + t('blUpNext') + '</div><div class="bl-list">' + up.map(function (u, i) {
-      return '<div class="bl-card' + (i === 0 ? ' first' : '') + (u.urgent ? ' urgent' : '') + '"><span>#' + u.no + (i === 0 ? ' <small>' + t('blNext') + '</small>' : '') + '</span>' +
-        (u.urgent ? '<em>⚡' + (i === 0 ? ' ' + t('urgent') : '') + '</em>' : '') + '</div>';
-    }).join('') + '<div class="bl-more" aria-hidden="true">···</div></div>' : '<div class="bl-idle">' + t('blIdle') + '</div>';
-    var backlog = '<div class="col backlog"><div class="col-h"><b title="' + esc(colLabel('backlog')) + '">' + esc(colLabel('backlog')) + '</b><span class="wipb">∞</span></div><div class="col-b">' +
-      (S.me ? '<button class="btn y start-btn' + (canStart ? ' hint' : '') + '" data-start="1"' + (canStart ? '' : ' disabled') + '>' + t('startNew') + '</button>' : '') +
+    var playing = g.phase === 'playing';
+    var bl = E.backlogTasks(g);
+    var pick = !!S.me && canStart;
+    var blList = !playing ? '<div class="bl-idle">' + t('blIdle') + '</div>'
+      : !bl.length ? '<div class="bl-idle">' + t('blEmpty') + '</div>'
+      : '<div class="bl-list">' + bl.map(function (u) {
+          return '<button class="bl-card' + (u.urgent ? ' urgent' : '') + (pick ? ' pick' : '') + '"' +
+            (pick ? ' draggable="true" data-pick="' + u.no + '" title="' + esc(t('blHint', { col: colLabel(E.firstCol(g)) })) + '"' : ' tabindex="-1"') + '>' +
+            '<span>#' + u.no + '</span>' + (u.urgent ? '<em>⚡ ' + t('urgent') + '</em>' : '') + '</button>';
+        }).join('') + '</div>';
+    var backlog = '<div class="col backlog' + (pick ? ' picking' : '') + '"><div class="col-h"><b title="' + esc(colLabel('backlog')) + '">' + esc(colLabel('backlog')) + '</b><span class="wipb">' + (playing ? bl.length : '–') + '</span></div><div class="col-b">' +
+      (pick ? '<div class="bl-hint">' + esc(t('blHint', { col: colLabel(E.firstCol(g)) })) + '</div>' : '') +
       (startBlockedByWip ? '<div class="stop-msg">' + t('stopStart') + '</div>' : '') + blList + '</div></div>';
     var tmpl = ['minmax(134px,164px)'].concat(cols.map(function (c) {
       return c.type === 'passive' ? 'minmax(112px,.7fr)' : 'minmax(132px,1fr)';
@@ -607,7 +616,7 @@
       '<div class="rule' + (r >= 5 ? ' on' : '') + '"><div class="n">5–6</div><p>' + t('r56') + '</p></div>' +
       '<div class="rule-note">⚠ ' + t('rHelp') + '</div>' +
       (queues.length ? '<div class="rule-note q">' + t('rQueue', { names: queues.map(function (c) { return '<b>' + esc(colLabel(c.id)) + '</b>'; }).join(', ') }) + '</div>' : '') +
-      (s.urgentPct > 0 || g.nextUrgent ? '<div class="rule-note urg">⚡ ' + t('rUrgent', { p: s.urgentPct }) + ' ' + t('rNoExpedite') + '</div>' : '') +
+      (s.urgentPct > 0 || E.backlogTasks(g).some(function (b) { return b.urgent; }) ? '<div class="rule-note urg">⚡ ' + t('rUrgent', { p: s.urgentPct }) + ' ' + t('rNoExpedite') + '</div>' : '') +
       (g.round === 2 ? '<div class="rule-note wip">' + t('rWip', { list: wipList(E.columns(g), true) }) + '</div>' : (g.round === 1 ? '<div class="rule-note">' + t('rNoWip') + '</div>' : '')) +
       '</div></div>';
     setHTML(el, html);
@@ -646,7 +655,7 @@
     if (!S.game) return '';
     var v = {
       name: esc(e.name), owner: esc(e.ownerName), no: e.no + (e.urgent ? ' ⚡' : ''), value: e.value, day: e.day, round: e.round,
-      to: e.to ? esc(colLabel(e.to)) : '', col: e.col ? esc(colLabel(e.col)) : '', wip: e.wip > 0 ? e.wip : '∞'
+      n: e.n, to: e.to ? esc(colLabel(e.to)) : '', col: e.col ? esc(colLabel(e.col)) : '', wip: e.wip > 0 ? e.wip : '∞'
     };
     if ((e.t === 'move' || e.t === 'unblock') && e.help) return t('l_help_' + e.t, v);
     return t('l_' + e.t, v);
@@ -654,7 +663,7 @@
   function renderLog() {
     var el = document.getElementById('sLog'); if (!el) return;
     var items = S.log.slice(-80).reverse().map(function (e) {
-      var sys = /dayEnd|roundStart|roundEnd|wipChange/.test(e.t);
+      var sys = /dayEnd|roundStart|roundEnd|wipChange|backlogAdd/.test(e.t);
       return '<div' + (sys ? ' class="sys"' : '') + '>' + logText(e) + '</div>';
     }).join('');
     setHTML(el, '<div class="panel"><h3>' + t('log') + '</h3><div class="log">' + items + '</div></div>');
@@ -707,6 +716,8 @@
         '<div class="progress"><i style="width:' + Math.round((g.day - 1) / s.days * 100) + '%"></i></div>' +
         '<div class="small muted">' + t('playersDone', { n: doneN, m: n }) + '</div>' +
         '<div class="stack-btns"><button class="btn" data-fac="nextDay">' + t('nextDay') + '</button><button class="btn ghost" data-fac="endRound">' + t('endRound') + '</button></div>' +
+        '<div class="fsec"><div class="fsec-h">' + t('inBacklog', { n: E.backlogTasks(g).length }) + '</div>' +
+        '<button class="btn y" data-fac="addBacklog" style="width:100%">' + t('addTasks', { n: E.BACKLOG_ADD }) + '</button></div>' +
         (g.round === 2 ? '<div class="fsec"><div class="fsec-h">' + t('wipTitleLive') + '</div>' + wipEditor(g, true) + '</div>' : '') +
         '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="' + g.day + '" max="40" value="' + s.days + '" data-set="days">' +
         (s.turnMode !== 'turns' ? '<label class="checkline"><input type="checkbox" data-set="autoAdvance"' + (s.autoAdvance ? ' checked' : '') + '> ' + t('autoAdv') + '</label>' : '') +
@@ -936,6 +947,44 @@
 
   // ================================================================ events
   function rerender() { [$app, $ov].concat([].slice.call(document.querySelectorAll('[id]'))).forEach(function (x) { x._html = null; }); render(); }
+  // ---------------------------------------------------------------- drag a task from the backlog
+  function startTask(no) {
+    act(function (g) { return E.apply(g, S.me, { type: 'start', no: Number(no) }); });
+  }
+  document.addEventListener('dragstart', function (e) {
+    var c = e.target.closest && e.target.closest('[data-pick]'); if (!c) return;
+    S.dragNo = c.getAttribute('data-pick');
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', S.dragNo); } catch (x) { }
+    c.classList.add('dragging');
+    document.body.classList.add('dragging-task');
+  });
+  function endDrag() {
+    S.dragNo = null;
+    document.body.classList.remove('dragging-task');
+    document.querySelectorAll('.dragging,.drop-over').forEach(function (x) { x.classList.remove('dragging', 'drop-over'); });
+    if (S.boardStale) renderBoard();
+  }
+  document.addEventListener('dragend', endDrag);
+  document.addEventListener('dragover', function (e) {
+    var z = e.target.closest && e.target.closest('[data-drop]');
+    if (!z || !S.dragNo) return;
+    e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+    z.classList.add('drop-over');
+  });
+  document.addEventListener('dragleave', function (e) {
+    var z = e.target.closest && e.target.closest('[data-drop]');
+    if (z && !z.contains(e.relatedTarget)) z.classList.remove('drop-over');
+  });
+  document.addEventListener('drop', function (e) {
+    var z = e.target.closest && e.target.closest('[data-drop]');
+    if (!z || !S.dragNo) return;
+    e.preventDefault();
+    var no = S.dragNo;
+    endDrag();
+    startTask(no);
+  });
+
   document.addEventListener('click', function (e) {
     var ov = e.target.closest('[data-ovclose]');
     if (ov && e.target === ov) { S.setup = false; renderSetup(); return; }
@@ -958,8 +1007,8 @@
       });
       return;
     }
-    if (d.start) { act(function (g) { return E.apply(g, S.me, { type: 'start' }); }); return; }
     if (d.act) { act(function (g) { return E.apply(g, S.me, { type: d.act, card: d.card }); }); return; }
+    if (d.pick) { startTask(d.pick); return; }
     if (d.skip) { act(function (g) { return E.forceEndTurn(g, d.skip); }); return; }
     if (d.remove) {
       var p = S.game.players[d.remove];
@@ -971,6 +1020,7 @@
       if (f === 'start1') act(function (g) { return E.startRound(g, 1); });
       if (f === 'start2') act(function (g) { return E.startRound(g, 2); });
       if (f === 'debrief') act(function (g) { return E.showDebrief(g); });
+      if (f === 'addBacklog') act(function (g) { return E.addBacklog(g); });
       if (f === 'suggest') act(function (g) { return E.updateSettings(g, { wip: E.suggestWip(g) }); });
       if (f === 'nextDay') {
         var g0 = S.game, all = E.playerList(g0).every(function (p) { return g0.turns[p.id] && g0.turns[p.id].done; });

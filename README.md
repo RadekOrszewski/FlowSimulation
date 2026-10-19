@@ -23,7 +23,7 @@ Players can't break the rules: the app only highlights the cards (and the *Start
 | **Can't act** | If no action on their own tasks is possible, they must **help**: move or unblock another player's task |
 
 - Tasks flow **Backlog → work steps → Done** (default: Development, Testing); a move is one column to the right; blocked tasks can't move.
-- The **backlog** always shows the next 5 tasks (urgent ones flagged); starting a task takes the top one and a new task is added at the bottom.
+- The **backlog** starts each round with **10 tasks** (urgent ones flagged). It is **not** refilled automatically: the facilitator clicks **+ Add 10 tasks to the backlog** whenever they decide. Players start a task by **dragging it** from the backlog onto the first work column (or clicking it), and they choose which one, urgent or not. With an empty backlog nobody can start.
 - A task started today can't also be moved today.
 - **Round 2:** every column with a WIP limit enforces it (blocked tasks count). Starting or moving into a full column is not offered. When nothing else is possible, the player is switched to *help mode*.
 - **Queue columns** (optional, e.g. "Ready for Testing") sit between two work steps. No work happens there: tasks in a queue can't be blocked, and moving a task in and moving it out take one action each. They make waiting time visible.
@@ -89,7 +89,7 @@ Commit, wait a minute, reload the page: the red **TEST MODE** label disappears a
    - set the **share of urgent tasks** (0–100 %). Urgent tasks are marked and kept at the top of their column, are not forced to go first, and always respect WIP limits.
    The board layout is locked once round 1 starts, so both rounds are played on the same board and can be compared.
 4. Choose days per round (10 is a good default, 6–8 if time is short) and the turn order, then **Start round 1**.
-5. Players roll the die and click highlighted cards. The day advances automatically when everyone is done (or click **Next day**; use **skip** next to a player who stepped away).
+5. Players roll the die, click highlighted cards and drag tasks from the backlog. Top the backlog up with **+ Add 10 tasks** when you want more work available (in round 1, adding generously lets the board overload). The day advances automatically when everyone is done (or click **Next day**; use **skip** next to a player who stepped away).
 6. After round 1 the board shows the results and a cumulative flow diagram. Discuss, then set **WIP limits** (the panel suggests values for your group size) and, if you like, a different share of urgent tasks, and **Start round 2**.
 7. During round 2 you can **change WIP limits live** from the facilitator panel (e.g. tighten them if the group is still starting too much). Changes apply immediately, appear in the activity log and are listed in the debrief.
 8. After round 2 click **Show debrief to everyone** and walk through the comparison. **Download data (CSV)** if you want the numbers.
