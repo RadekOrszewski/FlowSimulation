@@ -72,7 +72,8 @@
       players: {},
       cards: {},
       nextNo: 1,
-      nextUrgent: false,
+      nextUrgent: false,       // = upcoming[0], kept for older clients
+      upcoming: [],            // urgent flags of the next BACKLOG_SHOW backlog tasks
       seq: 0,
       turns: {},
       history: {}
@@ -98,6 +99,8 @@
     });
     if (s.urgentPct == null) s.urgentPct = 0;
     delete s.urgentExpedite;
+    g.upcoming = arr(g.upcoming).map(function (u) { return !!u; });
+    if (!g.upcoming.length && g.phase === 'playing') { g.upcoming = [!!g.nextUrgent]; fillBacklog(g); }
     Object.keys(g.turns).forEach(function (k) {
       var t = g.turns[k];
       t.steps = arr(t.steps);
@@ -231,9 +234,20 @@
     return ['any', 'any'];
   }
 
+  // The backlog always shows the next BACKLOG_SHOW tasks; when one is
+  // started, a new one is added at the bottom.
+  var BACKLOG_SHOW = 5;
   function rollUrgent(g) {
     var p = Math.max(0, Math.min(100, Number(g.settings.urgentPct) || 0));
-    g.nextUrgent = p > 0 && Math.random() * 100 < p;
+    return p > 0 && Math.random() * 100 < p;
+  }
+  function fillBacklog(g, reset) {
+    if (reset || !Array.isArray(g.upcoming)) g.upcoming = [];
+    while (g.upcoming.length < BACKLOG_SHOW) g.upcoming.push(rollUrgent(g));
+    g.nextUrgent = g.upcoming[0];
+  }
+  function upcomingTasks(g) {
+    return (g.upcoming || []).map(function (u, i) { return { no: g.nextNo + i, urgent: !!u }; });
   }
 
   // ---------- day / turn flow ----------
@@ -309,16 +323,26 @@
   function fail(code) { return { ok: false, error: code, events: [] }; }
   function ok(ev) { return { ok: true, events: ev || [] }; }
 
-  function addPlayer(g, pid, name) {
+  function avatarTaken(g, avatar, pid) {
+    return Object.keys(g.players).some(function (k) { return k !== pid && g.players[k].avatar === avatar; });
+  }
+
+  function addPlayer(g, pid, name, avatar) {
     name = String(name || '').trim().slice(0, 24);
     if (!name) return fail('nameRequired');
-    if (g.players[pid]) { g.players[pid].name = name; return ok(); }
+    avatar = /^[a-z0-9-]{1,24}$/.test(avatar || '') ? avatar : '';
+    if (avatar && avatarTaken(g, avatar, pid)) return fail('avatarTaken');
+    if (g.players[pid]) {
+      g.players[pid].name = name;
+      if (avatar) g.players[pid].avatar = avatar;
+      return ok();
+    }
     var used = {};
     Object.keys(g.players).forEach(function (k) { used[g.players[k].color] = true; });
     var color = PALETTE.filter(function (c) { return !used[c]; })[0] ||
       PALETTE[Object.keys(g.players).length % PALETTE.length];
     g.seq = (g.seq || 0) + 1;
-    g.players[pid] = { name: name, color: color, seq: g.seq };
+    g.players[pid] = { name: name, color: color, avatar: avatar, seq: g.seq };
     return ok([{ t: 'join', pid: pid, name: name }]);
   }
 
@@ -437,7 +461,7 @@
     g.round = n;
     g.day = 1;
     g.turns = {};
-    rollUrgent(g);
+    fillBacklog(g, true);
     var d0 = { c: {}, done: 0, blocked: 0, urgent: 0 };
     columns(g).forEach(function (c) { d0.c[c.id] = 0; });
     g.history['r' + n] = {
@@ -475,10 +499,11 @@
       var id = 'c' + g.round + '_' + g.nextNo;
       card = {
         id: id, no: g.nextNo++, owner: pid, col: firstCol(g), blocked: false, round: g.round,
-        startDay: g.day, urgent: !!g.nextUrgent, path: [{ c: firstCol(g), d: g.day }]
+        startDay: g.day, urgent: !!g.upcoming[0], path: [{ c: firstCol(g), d: g.day }]
       };
       g.cards[id] = card;
-      rollUrgent(g);
+      g.upcoming.shift();
+      fillBacklog(g);
       events.push({ t: 'start', pid: pid, no: card.no, urgent: card.urgent });
     } else {
       card = g.cards[act.card];
@@ -598,7 +623,8 @@
   }
 
   var api = {
-    PALETTE: PALETTE, MAX_ACTIVE: MAX_ACTIVE,
+    PALETTE: PALETTE, MAX_ACTIVE: MAX_ACTIVE, BACKLOG_SHOW: BACKLOG_SHOW,
+    upcomingTasks: upcomingTasks, avatarTaken: avatarTaken,
     newGame: newGame, norm: norm, clone: clone,
     columns: columns, colById: colById, nextCol: nextCol, firstCol: firstCol, isActive: isActive, hasPassive: hasPassive,
     playerList: playerList, roundCards: roundCards, countIn: countIn,

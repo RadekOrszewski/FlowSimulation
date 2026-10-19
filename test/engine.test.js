@@ -213,6 +213,30 @@ test('metrics: queue waiting time, flow efficiency, urgent vs standard', () => {
   assert.ok(m.days.find(d => d.day === 3).c[q] === 1);
 });
 
+test('backlog shows the next 5 tasks and refills as tasks are started', () => {
+  const g = setup(2, { urgentPct: 50 });
+  E.startRound(g, 1);
+  assert.strictEqual(E.upcomingTasks(g).length, 5);
+  assert.deepStrictEqual(E.upcomingTasks(g).map(x => x.no), [1, 2, 3, 4, 5]);
+  const preview = E.upcomingTasks(g)[0];
+  E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'start' });
+  const c = cardsOf(g, 'p1')[0];
+  assert.strictEqual(c.no, preview.no);
+  assert.strictEqual(!!c.urgent, preview.urgent, 'started task matches the previewed card');
+  assert.deepStrictEqual(E.upcomingTasks(g).map(x => x.no), [2, 3, 4, 5, 6], 'a new task is added at the bottom');
+  assert.strictEqual(g.nextUrgent, E.upcomingTasks(g)[0].urgent);
+});
+
+test('avatars: stored per player, one avatar per player', () => {
+  const g = E.newGame('fac');
+  assert.ok(E.addPlayer(g, 'p1', 'Ala', 'ninja-red').ok);
+  assert.strictEqual(g.players.p1.avatar, 'ninja-red');
+  assert.strictEqual(E.addPlayer(g, 'p2', 'Bob', 'ninja-red').error, 'avatarTaken');
+  assert.ok(E.addPlayer(g, 'p2', 'Bob', 'robot').ok);
+  assert.ok(E.addPlayer(g, 'p3', 'Cyd', 'bad id!').ok, 'invalid id ignored');
+  assert.strictEqual(g.players.p3.avatar, '');
+});
+
 test('sessions saved by version 1 are upgraded', () => {
   const g = E.newGame('f'); delete g.settings.columns; g.settings.wip = { dev: 4, test: 5 };
   E.norm(g);

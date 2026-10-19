@@ -23,6 +23,7 @@ Players can't break the rules: the app only highlights the cards (and the *Start
 | **Can't act** | If no action on their own tasks is possible, they must **help**: move or unblock another player's task |
 
 - Tasks flow **Backlog → work steps → Done** (default: Development, Testing); a move is one column to the right; blocked tasks can't move.
+- The **backlog** always shows the next 5 tasks (urgent ones flagged); starting a task takes the top one and a new task is added at the bottom.
 - A task started today can't also be moved today.
 - **Round 2:** every column with a WIP limit enforces it (blocked tasks count). Starting or moving into a full column is not offered. When nothing else is possible, the player is switched to *help mode*.
 - **Queue columns** (optional, e.g. "Ready for Testing") sit between two work steps. No work happens there: tasks in a queue can't be blocked, and moving a task in and moving it out take one action each. They make waiting time visible.
@@ -39,7 +40,7 @@ You need two free services: **GitHub Pages** to host the page and **Firebase Rea
 ### 1. Put the files on GitHub Pages
 
 1. Create a new repository on GitHub, e.g. `kanban-flow-game` (public).
-2. Upload all files from this folder (`index.html`, `app.js`, `engine.js`, `sync.js`, `config.js`, …) to the repository root.
+2. Upload all files from this folder (`index.html`, `app.js`, `engine.js`, `avatars.js`, `sync.js`, `config.js`, …) to the repository root.
 3. Go to **Settings → Pages**, set *Source* to **Deploy from a branch**, branch `main`, folder `/ (root)`, and save.
 4. After a minute your game is live at `https://<your-user>.github.io/kanban-flow-game/`.
 
@@ -78,7 +79,7 @@ Commit, wait a minute, reload the page: the red **TEST MODE** label disappears a
 ## Running a workshop
 
 1. Open the app and click **Create new session**. You become the facilitator; the panel shows a 5-letter code.
-2. Share the invite link (**Copy invite link**) or the code. Participants enter their name and get a colour.
+2. Share the invite link (**Copy invite link**) or the code. Participants enter their name and pick an avatar (each avatar can be used by one player only). Their avatar appears on every task they own.
 3. Optional: open **Board & rules setup** to
    - rename any column, including Backlog and Done (names can be changed at any time, also mid-game);
    - add work steps (up to 4) or remove them;
@@ -113,6 +114,7 @@ Tips:
 | `index.html` | Page shell and styling |
 | `app.js` | Screens, board interaction, facilitator controls, charts, translations |
 | `engine.js` | Rules engine (pure JS, no dependencies) |
+| `avatars.js` | Player avatars, drawn as inline SVG (add or edit them in the `DEFS` list) |
 | `sync.js` | Firebase Realtime Database sync + local test mode |
 | `config.js` | Your settings |
 | `database.rules.json` | Security rules to paste into Firebase |

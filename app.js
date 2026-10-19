@@ -16,6 +16,8 @@
       testMode: '<b>Test mode</b> – no database configured. Sessions sync only between tabs of this browser. Open several tabs to rehearse; add a Firebase config in <span class="mono">config.js</span> to play online.',
       notFound: 'Session <b>{code}</b> not found.', backHome: 'Back to start',
       joinAs: 'Join session {code}', yourName: 'Your name', namePh: 'e.g. Anna', enter: 'Enter the board',
+      pickAvatar: 'Pick your avatar', avatarTakenHint: 'Greyed-out avatars are already taken.', e_avatarTaken: 'Someone just took that avatar — pick another one.',
+      blNext: 'next', blUpNext: 'Up next', blIdle: 'New tasks appear here when the round starts.',
       reclaim: 'Rejoining? Pick yourself:', orNew: 'Or join as someone new',
       session: 'Session', round: 'Round', day: 'Day', lobby: 'Lobby', of: 'of',
       copyInvite: 'Copy invite link', copied: 'Copied to clipboard',
@@ -119,6 +121,8 @@
       testMode: '<b>Tryb testowy</b> – brak skonfigurowanej bazy. Sesje synchronizują się tylko między kartami tej przeglądarki. Otwórz kilka kart, żeby przećwiczyć; dodaj konfigurację Firebase w <span class="mono">config.js</span>, aby grać online.',
       notFound: 'Nie znaleziono sesji <b>{code}</b>.', backHome: 'Wróć na start',
       joinAs: 'Dołącz do sesji {code}', yourName: 'Twoje imię', namePh: 'np. Anna', enter: 'Wejdź na tablicę',
+      pickAvatar: 'Wybierz awatar', avatarTakenHint: 'Wyszarzone awatary są już zajęte.', e_avatarTaken: 'Ktoś właśnie wybrał ten awatar — wybierz inny.',
+      blNext: 'następne', blUpNext: 'Kolejne zadania', blIdle: 'Nowe zadania pojawią się tu po rozpoczęciu rundy.',
       reclaim: 'Wracasz? Wybierz siebie:', orNew: 'Albo dołącz jako nowa osoba',
       session: 'Sesja', round: 'Runda', day: 'Dzień', lobby: 'Poczekalnia', of: 'z',
       copyInvite: 'Kopiuj zaproszenie', copied: 'Skopiowano',
@@ -371,27 +375,59 @@
     toast('Could not create a session', true);
   }
 
+  // ================================================================ avatars
+  function avatarOf(p) {
+    if (p && p.avatar && Avatars.has(p.avatar)) return p.avatar;
+    var l = Avatars.list, i = ((p && p.seq) || 1) - 1;   // sessions from before avatars existed
+    return l[((i % l.length) + l.length) % l.length].id;
+  }
+  function av(p, px) { return Avatars.svg(avatarOf(p), px); }
+  function avName(id) { var a = Avatars.list.filter(function (x) { return x.id === id; })[0]; return a ? a.name[lang] || a.name.en : ''; }
+
   // ================================================================ join
   function renderJoin() {
     var g = S.game;
     var offline = E.playerList(g).filter(function (p) { return !S.presence[p.id]; });
-    var html = '<div class="home" style="max-width:460px"><div class="panel" style="padding:24px">' +
+    var html = '<div class="home" style="max-width:580px"><div class="panel" style="padding:24px">' +
       '<h2 style="margin-top:0">' + t('joinAs', { code: S.code }) + '</h2>';
     if (offline.length) {
       html += '<p class="small muted">' + t('reclaim') + '</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">' +
-        offline.map(function (p) { return '<button class="btn ghost sm" data-reclaim="' + p.id + '"><span class="dot" style="display:inline-block;vertical-align:-2px;margin-right:6px;background:' + p.color + '"></span>' + esc(p.name) + '</button>'; }).join('') +
+        offline.map(function (p) { return '<button class="btn ghost sm" data-reclaim="' + p.id + '" style="display:inline-flex;align-items:center;gap:6px">' + av(p, 20) + esc(p.name) + '</button>'; }).join('') +
         '</div><p class="small muted">' + t('orNew') + '</p>';
     }
-    html += '<form id="nameForm"><label class="f">' + t('yourName') + '</label><input type="text" id="nameIn" maxlength="24" placeholder="' + t('namePh') + '" autofocus>' +
+    var taken = {};
+    E.playerList(g).forEach(function (p) { if (p.avatar) taken[p.avatar] = true; });
+    if (!S.pickAv || taken[S.pickAv]) {
+      var free = Avatars.list.filter(function (a) { return !taken[a.id]; });
+      S.pickAv = (free.length ? free[Math.floor(Math.random() * free.length)] : Avatars.list[0]).id;
+    }
+    var nameVal = S.joinName || '';
+    html += '<form id="nameForm"><label class="f">' + t('yourName') + '</label><input type="text" id="nameIn" maxlength="24" placeholder="' + t('namePh') + '" value="' + esc(nameVal) + '" autofocus>' +
+      '<label class="f" style="margin-top:14px">' + t('pickAvatar') + '</label>' +
+      '<div class="av-grid" role="radiogroup" aria-label="' + esc(t('pickAvatar')) + '">' + Avatars.list.map(function (a) {
+        var nm = a.name[lang] || a.name.en;
+        return '<button type="button" class="av-opt' + (a.id === S.pickAv ? ' sel' : '') + '" role="radio" aria-checked="' + (a.id === S.pickAv) + '" data-av="' + a.id + '" title="' + esc(nm) + '" aria-label="' + esc(nm) + '"' + (taken[a.id] ? ' disabled' : '') + '>' + Avatars.svg(a.id, 52) + '</button>';
+      }).join('') + '</div>' +
+      (Object.keys(taken).length ? '<div class="small muted">' + t('avatarTakenHint') + '</div>' : '') +
+      '<div class="av-preview">' + Avatars.svg(S.pickAv, 44) + '<b id="avPrevName">' + esc(nameVal || avName(S.pickAv)) + '</b></div>' +
       '<button class="btn y" style="margin-top:12px;width:100%">' + t('enter') + '</button></form></div></div>';
     setHTML($app, html);
+    var nameIn = document.getElementById('nameIn');
+    if (nameIn) nameIn.oninput = function () {
+      S.joinName = nameIn.value;
+      var pv = document.getElementById('avPrevName'); if (pv) pv.textContent = nameIn.value || avName(S.pickAv);
+    };
+    document.querySelectorAll('[data-av]').forEach(function (b) {
+      b.onclick = function () { S.pickAv = b.getAttribute('data-av'); $app._html = null; renderJoin(); };
+    });
     var f = document.getElementById('nameForm');
     if (f) f.onsubmit = async function (e) {
       e.preventDefault();
       var name = document.getElementById('nameIn').value;
-      var pid = 'p' + rid(10);
-      var res = await act(function (g) { return E.addPlayer(g, pid, name); });
-      if (res.ok) claim(pid);
+      var pid = 'p' + rid(10), avId = S.pickAv;
+      var res = await act(function (g) { return E.addPlayer(g, pid, name, avId); });
+      if (res.ok) { S.joinName = ''; claim(pid); }
+      else { $app._html = null; renderJoin(); }
     };
   }
   function claim(pid) {
@@ -489,10 +525,10 @@
       var rot = (((c.no * 37) % 7) - 3) * 0.5;
       var tip = a ? t('tip_' + (a.help ? 'help_' : '') + a.type) : '';
       var title = esc(p.name) + (c.urgent ? ' · ' + t('urgent') : '');
-      return '<button class="' + cls + '" style="background:' + p.color + ';--rot:' + rot + 'deg"' +
+      return '<button class="' + cls + '" style="--rot:' + rot + 'deg"' +
         (a ? ' data-act="' + a.type + '" data-card="' + c.id + '" title="' + esc(tip) + '"' : ' tabindex="-1" title="' + title + '"') + '>' +
         '<span class="no">#' + c.no + (c.urgent ? ' <span class="bolt">⚡</span>' : '') + '</span>' + (c.blocked ? '<span class="stamp">' + t('blocked') + '</span>' : '') +
-        '<span class="own">' + esc(p.name) + '</span>' + (a ? '<span class="tip">' + esc(tip) + '</span>' : '') + '</button>';
+        '<span class="own">' + av(p, 24) + '<span>' + esc(p.name) + '</span></span>' + (a ? '<span class="tip">' + esc(tip) + '</span>' : '') + '</button>';
     }
     function column(key, type) {
       var list = cards.filter(function (c) { return c.col === key; }).sort(function (a, b) {
@@ -507,12 +543,15 @@
         '<div class="col-b">' + (list.length ? list.map(card).join('') : '<div class="empty-col">' + t('emptyCol') + '</div>') + '</div></div>';
     }
     var showNext = g.phase === 'playing';
-    var nextUrg = showNext && g.nextUrgent;
+    var up = showNext ? E.upcomingTasks(g) : [];
+    var blList = up.length ? '<div class="bl-label">' + t('blUpNext') + '</div><div class="bl-list">' + up.map(function (u, i) {
+      return '<div class="bl-card' + (i === 0 ? ' first' : '') + (u.urgent ? ' urgent' : '') + '"><span>#' + u.no + (i === 0 ? ' <small>' + t('blNext') + '</small>' : '') + '</span>' +
+        (u.urgent ? '<em>⚡' + (i === 0 ? ' ' + t('urgent') : '') + '</em>' : '') + '</div>';
+    }).join('') + '<div class="bl-more" aria-hidden="true">···</div></div>' : '<div class="bl-idle">' + t('blIdle') + '</div>';
     var backlog = '<div class="col backlog"><div class="col-h"><b title="' + esc(colLabel('backlog')) + '">' + esc(colLabel('backlog')) + '</b><span class="wipb">∞</span></div><div class="col-b">' +
-      '<div class="stack' + (nextUrg ? ' urgent' : '') + '"><i></i><i></i><i></i><span>#' + (showNext ? g.nextNo : '…') + (nextUrg ? '<em>⚡ ' + t('urgent') + '</em>' : '') + '</span></div>' +
       (S.me ? '<button class="btn y start-btn' + (canStart ? ' hint' : '') + '" data-start="1"' + (canStart ? '' : ' disabled') + '>' + t('startNew') + '</button>' : '') +
-      (startBlockedByWip ? '<div class="stop-msg">' + t('stopStart') + '</div>' : '') + '</div></div>';
-    var tmpl = ['minmax(120px,150px)'].concat(cols.map(function (c) {
+      (startBlockedByWip ? '<div class="stop-msg">' + t('stopStart') + '</div>' : '') + blList + '</div></div>';
+    var tmpl = ['minmax(134px,164px)'].concat(cols.map(function (c) {
       return c.type === 'passive' ? 'minmax(112px,.7fr)' : 'minmax(132px,1fr)';
     }), ['minmax(116px,.85fr)']).join(' ');
     if (el.style.gridTemplateColumns !== tmpl) el.style.gridTemplateColumns = tmpl;
@@ -591,7 +630,7 @@
         if (g.phase === 'playing' && !(tn && tn.done)) controls += '<button class="btn ghost sm" data-skip="' + p.id + '" style="padding:2px 6px">' + t('skip') + '</button>';
         controls += '<button class="x" data-remove="' + p.id + '" title="✕">✕</button>';
       }
-      return '<li><span class="dot" style="background:' + p.color + '"></span><span class="on-dot' + (S.presence[p.id] ? ' on' : '') + '"></span>' +
+      return '<li>' + av(p, 26) + '<span class="on-dot' + (S.presence[p.id] ? ' on' : '') + '"></span>' +
         '<span class="pname' + (p.id === S.me ? ' me' : '') + '">' + esc(p.name) + (p.id === S.me ? ' (' + t('you') + ')' : '') + '</span>' +
         '<span class="pstat' + stCls + '">' + st + '</span>' + controls + '</li>';
     }).join('') + '</ul></div>';

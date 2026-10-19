@@ -264,6 +264,45 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--yellow);ou
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;z-index:60;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .toast.err{background:var(--red)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+
+/* ---------- avatars, cards and backlog (v3) ---------- */
+.avatar{display:block;flex:none;border-radius:50%}
+.card{background:var(--card-bg,#fff7cc);--card-bg:#fff7cc}
+.card .own{display:flex;align-items:center;gap:5px;min-width:0}
+.card .own .avatar{box-shadow:0 0 0 1.5px #fff}
+.card .own span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card.mine{--card-bg:#fff1a3}
+.card.blocked{filter:none;background:#f1efe9}
+.done .card{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:2px}
+.done .card .own{display:flex}
+.done .card .own span{display:none}
+.card.helped .own::after{content:none}
+.card.helped .own span::after{content:" ✚";color:var(--blue)}
+.card .stamp{top:42%}
+.plist .avatar{box-shadow:0 0 0 1px var(--line)}
+
+.board .col.backlog{background:#fffbe3;border:2px solid var(--yellow);box-shadow:0 2px 0 rgba(22,33,62,.04)}
+.col.backlog .col-h{background:var(--yellow);border-bottom:0;border-radius:10px 10px 0 0}
+.col.backlog .col-h .wipb{background:rgba(22,33,62,.12);color:var(--navy)}
+.bl-label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:4px 2px -4px}
+.bl-list{display:flex;flex-direction:column;gap:6px}
+.bl-card{display:flex;align-items:center;justify-content:space-between;gap:6px;height:34px;padding:0 10px;border-radius:5px;background:#fff;border:1.5px dashed #d6cfb8;
+  font-family:var(--mono);font-size:13px;color:#8a8370}
+.bl-card.first{height:52px;border:0;background:#fff7cc;color:var(--navy);font-size:16px;font-weight:500;box-shadow:0 1px 0 rgba(0,0,0,.06),0 3px 8px rgba(22,33,62,.14)}
+.bl-card.first small{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.bl-card.urgent{border-color:var(--red);color:#a61e1e;background:#fff5f5}
+.bl-card.first.urgent{background:#fff7cc;box-shadow:0 0 0 2.5px var(--red),0 3px 8px rgba(214,60,60,.3)}
+.bl-card em{white-space:nowrap;flex:none;font-style:normal;font-size:10px;font-weight:600;color:#fff;background:var(--red);padding:1px 5px;border-radius:4px;letter-spacing:.04em}
+.bl-more{text-align:center;color:#c2b98f;font-size:18px;line-height:.6;letter-spacing:2px}
+.bl-idle{font-size:12px;color:var(--muted);text-align:center;padding:12px 4px}
+
+.av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px;margin:6px 0 4px;padding:2px}
+.av-opt{border:0;background:transparent;padding:4px;border-radius:12px;display:grid;place-items:center;position:relative}
+.av-opt:hover:not(:disabled){background:#f1efe9}
+.av-opt.sel{background:var(--yellow-soft);box-shadow:inset 0 0 0 2.5px var(--navy)}
+.av-opt:disabled{opacity:.28;filter:grayscale(1)}
+.av-preview{display:flex;align-items:center;gap:12px;margin:10px 0 2px}
+.av-preview b{font-size:15px}
 </style>
 </head>
 <body>
@@ -279,6 +318,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 
 <script src="config.js"></script>
 <script src="engine.js"></script>
+<script src="avatars.js"></script>
 <script src="sync.js"></script>
 <script src="app.js"></script>
 </body>
