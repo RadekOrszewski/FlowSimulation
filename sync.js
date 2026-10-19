@@ -86,13 +86,15 @@
         return dbm.onValue(r('sessions/' + code + '/workshop'), function (s) { cb(s.val()); });
       },
       wsUpdate: async function (code, mutate) {
-        var out = null;
+        var out = false;
         var res = await dbm.runTransaction(r('sessions/' + code + '/workshop'), function (cur) {
-          if (cur === null) return;
-          out = mutate(cur);
+          // The first call often runs on an empty local cache (null). Returning null (not
+          // aborting) lets Firebase compare with the server and re-run with the real data.
+          if (cur === null) { out = false; return null; }
+          out = !!mutate(cur);
           return out ? plain(cur) : undefined;
         });
-        return res.committed && !!out;
+        return res.committed && out;
       }
     };
   }

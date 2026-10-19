@@ -459,7 +459,8 @@
       var game = E.newGame(fid, Date.now(), { ws: wcode, group: idx, groupName: LETTERS[idx], settings: settings || undefined });
       if (await S.sync.create(code, game)) {
         store().setItem('kfg:fac:' + code, fid);
-        await S.sync.wsUpdate(wcode, function (ws) { var gl = arrOf(ws.groups); gl.push(code); ws.groups = gl; return true; });
+        var okW = await S.sync.wsUpdate(wcode, function (ws) { var gl = arrOf(ws.groups); if (gl.indexOf(code) < 0) gl.push(code); ws.groups = gl; return true; });
+        if (!okW) { toast('Could not add the group to the workshop', true); return null; }
         return code;
       }
     }
@@ -548,7 +549,9 @@
       }).join('') + '</div><div class="tabbody results">' + body + '</div></section>';
   }
   function wsControls() {
-    var games = wsGames(), g = S.game; if (!g) return '';
+    var games = wsGames(), g = S.game;
+    if (!g) return '<div class="panel fac"><h3>' + t('wsGroupsLabel') + '</h3><div class="seg">' + [1, 2, 3, 4].map(function (k) {
+      return '<button data-ngroups="' + k + '">' + k + '</button>'; }).join('') + '</div></div>';
     var s = g.settings;
     var lobby = games.every(function (x) { return x.phase === 'lobby'; });
     var anyPlaying = games.some(function (x) { return x.phase === 'playing'; });
@@ -592,12 +595,12 @@
   }
   async function setGroupCount(n) {
     var codes = wsGroupCodes();
-    if (n === codes.length || !S.game) return;
+    if (n === codes.length) return;
     if (n > codes.length) {
       for (var i = codes.length; i < n; i++) {
         var used = wsGames().map(function (x) { return x.group; }), idx = 0;
         while (used.indexOf(idx) >= 0) idx++;
-        var c = await createGroup(S.wsCode, S.ws.facilitator, idx, S.game.settings);
+        var c = await createGroup(S.wsCode, S.ws.facilitator, idx, S.game ? S.game.settings : null);
         if (!c) return;
         await waitFor(function () { return S.groups[c]; });
       }
