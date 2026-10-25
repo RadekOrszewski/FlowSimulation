@@ -165,7 +165,7 @@
     return roundCards(g).filter(function (c) { return c.col === col; }).length;
   }
 
-  function wipActive(g) { return g.round === 2; }
+  function wipActive(g) { return g.round >= 2; }   // rounds 2 and 3 use WIP limits
 
   function limitOf(g, col) {
     if (!wipActive(g) || col === 'done') return 0;
@@ -419,8 +419,8 @@
         var w = clampInt(patch.wip[id], 0, 30, c.wip);
         if (w === c.wip) return;
         c.wip = w;
-        if (g.phase === 'playing' && g.round === 2) {
-          var h = g.history.r2;
+        if (g.phase === 'playing' && g.round >= 2) {
+          var h = g.history['r' + g.round];
           h.wipLog = h.wipLog || [];
           h.wipLog.push({ day: g.day, col: id, wip: w });
           ev.push({ t: 'wipChange', col: id, wip: w });
@@ -487,13 +487,16 @@
   function startRound(g, n) {
     if (n === 1 && g.phase !== 'lobby') return fail('badPhase');
     if (n === 2 && !(g.round === 1 && g.phase === 'roundEnd')) return fail('badPhase');
+    // optional round 3: a fresh board after round 2, with WIP limits and card age from day 1
+    if (n === 3 && !(g.round === 2 && g.phase === 'roundEnd')) return fail('badPhase');
+    if (n < 1 || n > 3) return fail('badPhase');
     if (!playerList(g).length) return fail('noPlayers');
     var carried = n === 2 ? carryOver(g) : 0;
     g.phase = 'playing';
     g.round = n;
     g.day = 1;
     g.turns = {};
-    if (n === 1) { g.backlog = []; pushTasks(g, BACKLOG_START); }
+    if (n !== 2) { g.backlog = []; pushTasks(g, BACKLOG_START); }
     // round 2 keeps the board: unfinished work and the remaining backlog stay
     var d0 = { c: {}, done: 0, blocked: 0, urgent: 0 };
     columns(g).forEach(function (c) { d0.c[c.id] = 0; });
@@ -506,7 +509,7 @@
       carried: carried,
       days: { d0: d0 },
       columns: clone(columns(g)),
-      wipLimits: n === 2,
+      wipLimits: n >= 2,
       urgentPct: g.settings.urgentPct,
       players: playerList(g).length,
       startedAt: Date.now()

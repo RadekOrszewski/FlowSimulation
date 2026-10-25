@@ -56,7 +56,7 @@
       r56: 'Do <b>two</b>: move your task, unblock your task, start a new task. Never two actions on the same task in one day.',
       rHelp: 'Can\'t do any of the above? Pair up and help: unblock or move someone else\'s task.',
       rNoWip: 'Round 1: no WIP limits.',
-      rWip: 'Round 2 WIP limits: {list}. Blocked tasks count too.',
+      rWip: 'Round {n} WIP limits: {list}. Blocked tasks count too.',
       // players & log
       team: 'Team', log: 'Activity', noPlayers: 'No players yet — share the code.',
       st_done: '✓ done', st_playing: '▶ playing', st_wait: '…', st_rolled: '🎲 {v}',
@@ -86,6 +86,11 @@
       ageShort: '{n}d', ageTip: 'In process for {n} days (since it left the backlog)', k_carried: 'Tasks carried over from round 1',
       l_drop: 'Facilitator took #{no} off the board', l_undrop: 'Facilitator put #{no} back on the board',
       r2done: 'Both rounds are done. Open the debrief to compare them.',
+      r2doneOpt: 'Round 2 is over. Show the debrief now, or play the optional round 3 first.', r3done: 'Round 3 is over. Open the debrief to compare all rounds.',
+      r3: 'Round 3', r3Title: 'Optional round 3', startR3: 'Start round 3', startR3All: 'Start round 3 in all groups',
+      r3Help: 'A fresh board: the backlog starts again with 10 tasks and nothing carries over. WIP limits apply from day 1 and every card shows its days in process.',
+      r3HelpWs: 'Fresh boards with 10 new tasks, WIP limits from day 1 and days in process on every card. Set the limits in the shared settings below.',
+      wipTitleR3: 'WIP limits for round 3', wipChangedR: 'WIP limits changed during round {n}:', changeR: 'Change R{a} → R{b}',
       // results
       resultsTitle: 'Round {n} results', debriefTitle: 'Debrief: what did limiting WIP change?',
       k_finished: 'Tasks finished', k_started: 'Tasks started', k_ct85: 'Cycle time (85%)',
@@ -171,7 +176,7 @@
       r56: 'Wykonaj <b>dwie</b> akcje: przesuń, odblokuj, zacznij nowe. Nie wykonuj dwóch akcji na jednym zadaniu tego samego dnia.',
       rHelp: 'Nie możesz wykonać żadnej z akcji? Pomóż innej osobie: odblokuj lub przesuń jej zadanie.',
       rNoWip: 'Runda 1: bez limitów WIP.',
-      rWip: 'Limity WIP w rundzie 2: {list}. Zablokowane zadania też się liczą.',
+      rWip: 'Limity WIP w rundzie {n}: {list}. Zablokowane zadania też się liczą.',
       team: 'Zespół', log: 'Aktywność', noPlayers: 'Brak graczy — udostępnij kod.',
       st_done: '✓ gotowe', st_playing: '▶ gra', st_wait: '…', st_rolled: '🎲 {v}',
       skip: 'pomiń', remove: 'Usunąć {name} z gry?',
@@ -199,6 +204,11 @@
       ageShort: '{n} dni', ageTip: 'W toku od {n} dni (od wyjścia z backlogu)', k_carried: 'Zadania przeniesione z rundy 1',
       l_drop: 'Prowadzący zdejmuje #{no} z tablicy', l_undrop: 'Prowadzący przywraca #{no} na tablicę',
       r2done: 'Obie rundy zakończone. Otwórz podsumowanie, żeby je porównać.',
+      r2doneOpt: 'Runda 2 zakończona. Pokaż podsumowanie albo najpierw zagrajcie opcjonalną rundę 3.', r3done: 'Runda 3 zakończona. Otwórz podsumowanie, żeby porównać wszystkie rundy.',
+      r3: 'Runda 3', r3Title: 'Opcjonalna runda 3', startR3: 'Rozpocznij rundę 3', startR3All: 'Rozpocznij rundę 3 we wszystkich grupach',
+      r3Help: 'Czysta tablica: backlog zaczyna się od 10 zadań, nic nie przechodzi z poprzednich rund. Limity WIP obowiązują od pierwszego dnia, a każda karta pokazuje dni w toku.',
+      r3HelpWs: 'Czyste tablice z 10 nowymi zadaniami, limity WIP od pierwszego dnia i dni w toku na każdej karcie. Ustaw limity we wspólnych ustawieniach poniżej.',
+      wipTitleR3: 'Limity WIP na rundę 3', wipChangedR: 'Zmiany limitów WIP w rundzie {n}:', changeR: 'Zmiana R{a} → R{b}',
       resultsTitle: 'Wyniki rundy {n}', debriefTitle: 'Podsumowanie: co zmieniło ograniczenie WIP?',
       k_finished: 'Ukończone zadania', k_started: 'Rozpoczęte zadania', k_ct85: 'Czas cyklu (85%)',
       k_wip85: 'Praca w toku – WIP (85%)', k_tp: 'Przepustowość / dzień', k_wipEnd: 'Nieukończone na koniec', k_helped: 'Zadania z pomocą',
@@ -412,7 +422,7 @@
       h += '<span class="chip">' + t('session') + ' <b>' + S.code + '</b></span>';
       if (g.phase === 'lobby') h += '<span class="chip y">' + t('lobby') + '</span>';
       else h += '<span class="chip y">' + t('round') + ' ' + g.round + ' · ' + t('day') + ' ' + Math.min(g.day, g.settings.days) + ' ' + t('of') + ' ' + g.settings.days + '</span>';
-      if (g.round === 2) h += '<span class="chip">WIP ' + E.columns(g).map(function (c) { return c.wip > 0 ? c.wip : '∞'; }).join(' / ') + '</span>';
+      if (g.round >= 2) h += '<span class="chip">WIP ' + E.columns(g).map(function (c) { return c.wip > 0 ? c.wip : '∞'; }).join(' / ') + '</span>';
       h += '<button class="hbtn" data-copy="invite">' + t('copyInvite') + '</button>';
     }
     if (S.sync && S.sync.kind === 'local') h += '<span class="chip warn">TEST MODE</span>';
@@ -544,7 +554,7 @@
     if (!any) return '';
     if (!S.resGroup || codes.indexOf(S.resGroup) < 0) S.resGroup = codes[0];
     var g = S.groups[S.resGroup], body;
-    var r2done = g.round === 2 && (g.phase === 'roundEnd' || g.phase === 'debrief');
+    var r2done = (g.round === 2 && (g.phase === 'roundEnd' || g.phase === 'debrief')) || g.round === 3;
     if (r2done) body = withGame(g, function () { return debriefBody(g); });
     else if (E.metrics(g, 1) && (g.round === 2 || g.phase === 'roundEnd'))
       body = withGame(g, function () { return roundSummary(1); }) +
@@ -567,6 +577,7 @@
     var anyPlaying = games.some(function (x) { return x.phase === 'playing'; });
     var r1done = games.some(function (x) { return x.phase === 'roundEnd' && x.round === 1; });
     var r2end = games.some(function (x) { return x.phase === 'roundEnd' && x.round === 2; });
+    var r3end = games.some(function (x) { return x.phase === 'roundEnd' && x.round === 3; });
     var n = wsGroupCodes().length;
     var html = '<div class="panel fac"><h3>' + t('wsGroupsLabel') + '</h3>' +
       '<div class="seg">' + [1, 2, 3, 4].map(function (k) { return '<button class="' + (k === n ? 'on' : '') + '" data-ngroups="' + k + '"' + (lobby ? '' : ' disabled') + '>' + k + '</button>'; }).join('') + '</div>' +
@@ -575,15 +586,17 @@
     if (lobby) html += '<button class="btn y" data-wsfac="start1">' + t('startR1All') + '</button>';
     if (anyPlaying) html += '<button class="btn ghost" data-wsfac="endRound">' + t('endRoundAll') + '</button>';
     if (r1done) html += '<p class="small muted" style="margin:0 0 4px">' + t('carryWs') + '</p><button class="btn y" data-wsfac="start2">' + t('startR2All') + '</button>';
-    if (r2end) html += '<button class="btn y" data-wsfac="debrief">' + t('showDebriefAll') + '</button>';
-    if (!lobby && !anyPlaying && !r1done && !r2end) html += '<p class="small muted" style="margin:0">' + t('gs_debrief') + '</p>';
+    if (r2end || r3end) html += '<button class="btn y" data-wsfac="debrief">' + t('showDebriefAll') + '</button>';
+    if (r2end) html += '<div class="fsec" style="margin-top:4px"><div class="fsec-h">' + t('r3Title') + '</div><p class="small muted" style="margin:0 0 8px">' + t('r3HelpWs') + '</p>' +
+      '<button class="btn" data-wsfac="start3" style="width:100%">' + t('startR3All') + '</button></div>';
+    if (!lobby && !anyPlaying && !r1done && !r2end && !r3end) html += '<p class="small muted" style="margin:0">' + t('gs_debrief') + '</p>';
     html += '</div></div>';
     if (g.phase !== 'debrief') {
       html += '<div class="panel fac"><h3>' + t('wsShared') + '</h3>' + boardSummary(g) +
         '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="3" max="40" value="' + s.days + '" data-set="days">';
       if (lobby) html += '<label class="f">' + t('turnMode') + '</label><select data-set="turnMode"><option value="simultaneous"' + (s.turnMode !== 'turns' ? ' selected' : '') + '>' + t('tm_sim') + '</option><option value="turns"' + (s.turnMode === 'turns' ? ' selected' : '') + '>' + t('tm_turns') + '</option></select>';
       html += '<label class="checkline"><input type="checkbox" data-set="autoAdvance"' + (s.autoAdvance ? ' checked' : '') + '> ' + t('autoAdv') + '</label>';
-      var r2live = games.some(function (x) { return x.round === 2 && x.phase === 'playing'; });
+      var r2live = games.some(function (x) { return x.round >= 2 && x.phase === 'playing'; });
       if (!anyPlaying || r2live) html += '<div class="fsec"><div class="fsec-h">' + t(r2live ? 'wipTitleLive' : 'wipTitle') + '</div>' + wipEditor(g, r2live) + '</div>';
       if (!anyPlaying) html += '<div class="fsec"><div class="fsec-h">' + t('urgentTitle') + '</div>' + urgentEditor(g) + '</div>';
       html += '</div>';
@@ -631,16 +644,16 @@
   }
   async function wsFac(f) {
     var codes = wsGroupCodes();
-    if (f === 'start1' || f === 'start2') {
-      var n = f === 'start1' ? 1 : 2;
-      var ready = codes.filter(function (c) { var g = S.groups[c]; return g && (n === 1 ? g.phase === 'lobby' : g.phase === 'roundEnd' && g.round === 1); });
+    if (f === 'start1' || f === 'start2' || f === 'start3') {
+      var n = Number(f.slice(-1));
+      var ready = codes.filter(function (c) { var g = S.groups[c]; return g && (n === 1 ? g.phase === 'lobby' : g.phase === 'roundEnd' && g.round === n - 1); });
       var empty = ready.filter(function (c) { return !E.playerList(S.groups[c]).length; });
       if (empty.length === ready.length) { toast(t('needPlayers'), true); return; }
       if (empty.length && !confirm(t('emptyGroupsConfirm', { list: empty.map(function (c) { return t('groupName', { x: S.groups[c].groupName }); }).join(', ') }))) return;
       actMany(ready.filter(function (c) { return empty.indexOf(c) < 0; }), function (g) { return E.startRound(g, n); });
     }
     if (f === 'endRound' && confirm(t('endRoundConfirm'))) actMany(codes.filter(function (c) { return S.groups[c] && S.groups[c].phase === 'playing'; }), function (g) { return E.endRound(g); });
-    if (f === 'debrief') actMany(codes.filter(function (c) { return S.groups[c] && S.groups[c].phase === 'roundEnd' && S.groups[c].round === 2; }), function (g) { return E.showDebrief(g); });
+    if (f === 'debrief') actMany(codes.filter(function (c) { return S.groups[c] && S.groups[c].phase === 'roundEnd' && S.groups[c].round >= 2; }), function (g) { return E.showDebrief(g); });
   }
 
 
@@ -752,7 +765,7 @@
     var g = S.game, html = '';
     if (g.phase === 'roundEnd') html = roundSummary(g.round);
     else if (g.phase === 'debrief') html = '<div class="banner wip"><span>' + t('r2done') + '</span><button class="btn y sm" data-results="1" style="margin-left:auto">' + t('debriefTitle') + '</button></div>';
-    else if (g.phase === 'playing' && g.round === 2) html = '<div class="banner wip"><span>' + t('rWip', { list: wipList(E.columns(g), true) }) + '</span></div>';
+    else if (g.phase === 'playing' && g.round >= 2) html = '<div class="banner wip"><span>' + t('rWip', { n: g.round, list: wipList(E.columns(g), true) }) + '</span></div>';
     if (g.phase === 'playing' && S.me && isHelpMode()) html += '<div class="banner help"><span>' + t('step_help') + '</span></div>';
     setHTML(el, html);
   }
@@ -798,7 +811,7 @@
       var rot = (((c.no * 37) % 7) - 3) * 0.5;
       // no action labels on the cards: players decide what to do with a highlighted card themselves
       var title = esc(p.name) + (c.urgent ? ' · ' + t('urgent') : '');
-      var age = g.round === 2 && c.col !== 'done' ? E.daysInProcess(g, c) : null;
+      var age = g.round >= 2 && c.col !== 'done' ? E.daysInProcess(g, c) : null;
       var canDrop = dropMode && c.col !== 'done';
       if (canDrop) cls += ' droppable' + (c.dropped ? ' dropped' : '');
       var attrs = a ? ' data-act="' + a.type + '" data-card="' + c.id + '" aria-label="#' + c.no + ' · ' + title + '"'
@@ -816,11 +829,11 @@
         return (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0) || a.no - b.no;
       });
       var lim = E.limitOf(g, key), cnt = list.length;
-      var badge = key === 'done' ? cnt : (g.round === 2 && lim ? cnt + ' / ' + lim : cnt);
+      var badge = key === 'done' ? cnt : (g.round >= 2 && lim ? cnt + ' / ' + lim : cnt);
       var full = lim && cnt >= lim;
       var cls = 'col' + (key === 'done' ? ' done' : '') + (type === 'passive' ? ' queue' : '') + (full ? ' full' : '');
       var drop = canStart && key === E.firstCol(g);
-      return '<div class="' + cls + (drop ? ' dropzone' : '') + '"' + (drop ? ' data-drop="1"' : '') + '><div class="col-h"><b title="' + esc(colLabel(key)) + '">' + esc(colLabel(key)) + '</b><span class="wipb' + (g.round === 2 && lim ? ' on' : '') + (full ? ' full' : '') + '">' + badge + '</span></div>' +
+      return '<div class="' + cls + (drop ? ' dropzone' : '') + '"' + (drop ? ' data-drop="1"' : '') + '><div class="col-h"><b title="' + esc(colLabel(key)) + '">' + esc(colLabel(key)) + '</b><span class="wipb' + (g.round >= 2 && lim ? ' on' : '') + (full ? ' full' : '') + '">' + badge + '</span></div>' +
         (type === 'passive' ? '<div class="qtag">' + t('queue') + '</div>' : '') +
         '<div class="col-b">' + (list.length ? list.map(card).join('') : '<div class="empty-col">' + t('emptyCol') + '</div>') + '</div></div>';
     }
@@ -890,7 +903,7 @@
       '<div class="rule-note">⚠ ' + t('rHelp') + '</div>' +
       (queues.length ? '<div class="rule-note q">' + t('rQueue', { names: queues.map(function (c) { return '<b>' + esc(colLabel(c.id)) + '</b>'; }).join(', ') }) + '</div>' : '') +
       (s.urgentPct > 0 || E.backlogTasks(g).some(function (b) { return b.urgent; }) ? '<div class="rule-note urg">⚡ ' + t('rUrgent', { p: s.urgentPct }) + ' ' + t('rNoExpedite') + '</div>' : '') +
-      (g.round === 2 ? '<div class="rule-note wip">' + t('rWip', { list: wipList(E.columns(g), true) }) + '</div>' : (g.round === 1 ? '<div class="rule-note">' + t('rNoWip') + '</div>' : '')) +
+      (g.round >= 2 ? '<div class="rule-note wip">' + t('rWip', { n: g.round, list: wipList(E.columns(g), true) }) + '</div>' : (g.round === 1 ? '<div class="rule-note">' + t('rNoWip') + '</div>' : '')) +
       '</div></div>';
     setHTML(el, html);
   }
@@ -993,7 +1006,7 @@
         '<div class="stack-btns"><button class="btn" data-fac="nextDay">' + t('nextDay') + '</button><button class="btn ghost" data-fac="endRound">' + t('endRound') + '</button></div>' +
         '<div class="fsec"><div class="fsec-h">' + t('inBacklog', { n: E.backlogTasks(g).length }) + '</div>' +
         '<button class="btn y" data-fac="addBacklog" style="width:100%">' + t('addTasks', { n: E.BACKLOG_ADD }) + '</button></div>' +
-        (g.round === 2 ? '<div class="fsec"><div class="fsec-h">' + t('wipTitleLive') + '</div>' + wipEditor(g, true) + '</div>' : '') +
+        (g.round >= 2 ? '<div class="fsec"><div class="fsec-h">' + t('wipTitleLive') + '</div>' + wipEditor(g, true) + '</div>' : '') +
         '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="' + g.day + '" max="40" value="' + s.days + '" data-set="days">' +
         (s.turnMode !== 'turns' ? '<label class="checkline"><input type="checkbox" data-set="autoAdvance"' + (s.autoAdvance ? ' checked' : '') + '> ' + t('autoAdv') + '</label>' : '') +
         '<button class="btn ghost sm" data-setup="1" style="margin-top:10px;width:100%">✎ ' + t('renameBtn') + '</button>';
@@ -1007,8 +1020,15 @@
         '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="3" max="40" value="' + s.days + '" data-set="days">' +
         '<div class="stack-btns"><button class="btn y" data-fac="start2">' + t('startR2') + '</button>' +
         '<button class="btn ghost sm" data-setup="1">✎ ' + t('renameBtn') + '</button></div>';
+    } else if (g.phase === 'roundEnd' && g.round === 2) {
+      html += '<p class="small" style="margin:12px 0 0">' + t('r2doneOpt') + '</p>' +
+        '<div class="stack-btns"><button class="btn y" data-fac="debrief">' + t('showResults') + '</button></div>' +
+        '<div class="fsec"><div class="fsec-h">' + t('r3Title') + '</div><p class="small" style="margin:0 0 8px">' + t('r3Help') + '</p>' +
+        '<div class="fsec-h" style="font-size:13px">' + t('wipTitleR3') + '</div>' + wipEditor(g, false) +
+        '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="3" max="40" value="' + s.days + '" data-set="days">' +
+        '<div class="stack-btns"><button class="btn" data-fac="start3">' + t('startR3') + '</button></div></div>';
     } else if (g.phase === 'roundEnd') {
-      html += '<p class="small" style="margin:12px 0 0">' + t('r2done') + '</p><div class="stack-btns"><button class="btn y" data-fac="debrief">' + t('showResults') + '</button></div>';
+      html += '<p class="small" style="margin:12px 0 0">' + t('r3done') + '</p><div class="stack-btns"><button class="btn y" data-fac="debrief">' + t('showResults') + '</button></div>';
     } else {
       html += '<div class="stack-btns"><button class="btn y" data-results="1">' + t('debriefTitle') + '</button></div>';
     }
@@ -1145,56 +1165,62 @@
   }
   // Round 1 vs round 2 comparison for one game (uses S.game for labels: call through withGame for other groups)
   function debriefBody(g) {
-    var m1 = E.metrics(g, 1), m2 = E.metrics(g, 2);
-    var maxY = cfdMax([m1, m2]), maxX = Math.max(m1 ? m1.daysPlayed : 0, m2 ? m2.daysPlayed : 0);
-    function cmp(label, a, b, unit, lowerBetter, dec) {
-      var d = '';
-      if (a != null && b != null && a !== b) {
+    // one column per round played (2 or 3); "Change" compares round 1 with the last round
+    var R = [1, 2, 3].filter(function (r) { return E.metrics(g, r); });
+    var M = R.map(function (r) { return E.metrics(g, r); });
+    var first = M[0], last = M[M.length - 1], nR = R.length;
+    var maxY = cfdMax(M), maxX = Math.max.apply(null, M.map(function (m) { return m.daysPlayed; }).concat([1]));
+    function val(m, k) { return typeof k === 'function' ? k(m) : m ? m[k] : null; }
+    function cmp(label, k, unit, lowerBetter, dec) {
+      var vs = M.map(function (m) { return val(m, k); }), a = vs[0], b = vs[vs.length - 1], d = '';
+      if (nR > 1 && a != null && b != null && a !== b) {
         var better = lowerBetter == null ? null : lowerBetter ? b < a : b > a;
         var pct = a ? Math.round((b - a) / a * 100) : null;
         d = '<span class="delta ' + (better == null ? '' : better ? 'good' : 'bad') + '">' + (b > a ? '+' : '') + (pct != null ? pct + '%' : fmt(b - a)) + '</span>';
       }
       var u = unit ? ' <small>' + unit + '</small>' : '';
-      return '<tr><th scope="row">' + label + '</th><td>' + fmt(a, dec) + (a != null ? u : '') + '</td><td>' + fmt(b, dec) + (b != null ? u : '') + '</td><td class="chg">' + d + '</td></tr>';
+      return '<tr><th scope="row">' + label + '</th>' + vs.map(function (v) { return '<td>' + fmt(v, dec) + (v != null ? u : '') + '</td>'; }).join('') + '<td class="chg">' + d + '</td></tr>';
     }
-    function pctOf(m, k) { return m && m[k] != null ? m[k] * 100 : null; }
+    function pctOf(k) { return function (m) { return m && m[k] != null ? m[k] * 100 : null; }; }
     function roundSub(m) {
       if (!m) return '–';
       var s = m.wipLimits ? 'WIP ' + m.columns.map(function (c) { return c.wip > 0 ? c.wip : '∞'; }).join(' / ') : t('noWip');
       if (m.urgentPct) s += ', ' + t('urgentShort').toLowerCase() + ' ' + m.urgentPct + '%';
       return s;
     }
-    var anyUrgent = (m1 && m1.urgentStarted) || (m2 && m2.urgentStarted);
-    var queues = (m1 && m1.hasQueues) || (m2 && m2.hasQueues);
-    var ctMax = 3; [m1, m2].forEach(function (m) { if (m) m.cycleTimes.forEach(function (c) { ctMax = Math.max(ctMax, c); }); });
-    var hMax = 2; [m1, m2].forEach(function (m) { if (!m) return; var c = {}; m.cycleTimes.forEach(function (x) { c[x] = (c[x] || 0) + 1; hMax = Math.max(hMax, c[x]); }); });
-    var wipChanges = m2 && m2.wipLog.length ? '<p class="small muted">' + t('wipChanged') + ' ' + m2.wipLog.map(function (w) {
-      return t('day') + ' ' + w.day + ': ' + esc(colLabel(w.col)) + ' → ' + (w.wip > 0 ? w.wip : '∞');
-    }).join('; ') + '</p>' : '';
-    var kp = cmp(t('k_finished'), m1 && m1.finished, m2 && m2.finished, '', false, 1) +
-      cmp(t('k_ct85'), m1 && m1.p85CycleTime, m2 && m2.p85CycleTime, t('days_u'), true) +
-      cmp(t('k_wip85'), m1 && m1.p85Wip, m2 && m2.p85Wip, '', true) +
-      cmp(t('k_tp'), m1 && m1.throughputPerDay, m2 && m2.throughputPerDay, '', false, 100) +
-      cmp(t('k_started'), m1 && m1.started, m2 && m2.started, '', null, 1) +
-      (m2 && m2.carriedIn ? cmp(t('k_carried'), null, m2.carriedIn, '', null, 1) : '') +
-      cmp(t('k_wipEnd'), m1 && m1.inProgress, m2 && m2.inProgress, '', true, 1) +
-      cmp(t('k_helped'), m1 && m1.helpedCards, m2 && m2.helpedCards, '', false, 1);
-    if (queues) kp += cmp(t('k_wait'), m1 && m1.p85Wait, m2 && m2.p85Wait, t('days_u'), true) +
-      cmp(t('k_fe'), pctOf(m1, 'flowEfficiency'), pctOf(m2, 'flowEfficiency'), '%', false, 1);
-    if (anyUrgent) kp += cmp(t('k_ctUrgent'), m1 && m1.p85CtUrgent, m2 && m2.p85CtUrgent, t('days_u'), true) +
-      cmp(t('k_ctStd'), m1 && m1.p85CtStandard, m2 && m2.p85CtStandard, t('days_u'), true) +
-      cmp(t('k_urgentDone'), m1 && m1.urgentFinished, m2 && m2.urgentFinished, '', null, 1);
+    function any(k) { return M.some(function (m) { return m[k]; }); }
+    var anyUrgent = any('urgentStarted'), queues = any('hasQueues');
+    var ctMax = 3, hMax = 2;
+    M.forEach(function (m) { var c = {}; m.cycleTimes.forEach(function (x) { ctMax = Math.max(ctMax, x); c[x] = (c[x] || 0) + 1; hMax = Math.max(hMax, c[x]); }); });
+    var wipChanges = M.filter(function (m) { return m.wipLog.length; }).map(function (m) {
+      return '<p class="small muted">' + t('wipChangedR', { n: m.round }) + ' ' + m.wipLog.map(function (w) {
+        return t('day') + ' ' + w.day + ': ' + esc(colLabel(w.col)) + ' → ' + (w.wip > 0 ? w.wip : '∞');
+      }).join('; ') + '</p>';
+    }).join('');
+    var kp = cmp(t('k_finished'), 'finished', '', false, 1) +
+      cmp(t('k_ct85'), 'p85CycleTime', t('days_u'), true) +
+      cmp(t('k_wip85'), 'p85Wip', '', true) +
+      cmp(t('k_tp'), 'throughputPerDay', '', false, 100) +
+      cmp(t('k_started'), 'started', '', null, 1) +
+      (any('carriedIn') ? cmp(t('k_carried'), function (m) { return m.round === 2 ? m.carriedIn : null; }, '', null, 1) : '') +
+      cmp(t('k_wipEnd'), 'inProgress', '', true, 1) +
+      cmp(t('k_helped'), 'helpedCards', '', false, 1);
+    if (queues) kp += cmp(t('k_wait'), 'p85Wait', t('days_u'), true) + cmp(t('k_fe'), pctOf('flowEfficiency'), '%', false, 1);
+    if (anyUrgent) kp += cmp(t('k_ctUrgent'), 'p85CtUrgent', t('days_u'), true) +
+      cmp(t('k_ctStd'), 'p85CtStandard', t('days_u'), true) +
+      cmp(t('k_urgentDone'), 'urgentFinished', '', null, 1);
+    function rh(m) { return '<span class="rh r' + m.round + '">' + t('r' + m.round) + '</span>'; }
+    function chartRow(titleKey, body) {
+      return M.map(function (m) { return '<div class="panel chart"><h3>' + t(titleKey) + '<span class="mob"> · ' + t('r' + m.round) + '</span></h3>' + body(m) + '</div>'; }).join('');
+    }
     return '<p class="muted">' + t('nPlayers', { n: E.playerList(g).length }) + '</p>' + wipChanges +
-      '<div class="panel cmp-panel"><table class="cmp-table"><thead><tr><th scope="col">' + t('measure') + '</th>' +
-        '<th scope="col"><span class="rh r1">' + t('r1') + '</span><small>' + esc(roundSub(m1)) + '</small></th>' +
-        '<th scope="col"><span class="rh r2">' + t('r2') + '</span><small>' + esc(roundSub(m2)) + '</small></th>' +
-        '<th scope="col" class="chg">' + t('change') + '</th></tr></thead><tbody>' + kp + '</tbody></table></div>' +
-      '<div class="rounds-h"><div><span class="rh r1">' + t('r1') + '</span> ' + esc(roundSub(m1)) + '</div><div><span class="rh r2">' + t('r2') + '</span> ' + esc(roundSub(m2)) + '</div></div>' +
-      '<div class="charts">' +
-      '<div class="panel chart"><h3>' + t('cfd') + '<span class="mob"> · ' + t('r1') + '</span></h3>' + (m1 ? cfdSvg(m1, maxY, maxX) + cfdLegend(m1.columns) : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('cfd') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? cfdSvg(m2, maxY, maxX) + cfdLegend(m2.columns) : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r1') + '</span></h3>' + (m1 ? histSvg(m1.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 1), m1.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
-      '<div class="panel chart"><h3>' + t('ctDist') + '<span class="mob"> · ' + t('r2') + '</span></h3>' + (m2 ? histSvg(m2.cycleTimes, ctMax, hMax, urgentCycleTimes(g, 2), m2.p85CycleTime) : '') + (anyUrgent ? histLegend() : '') + '</div>' +
+      '<div class="panel cmp-panel"><table class="cmp-table n' + nR + '"><thead><tr><th scope="col">' + t('measure') + '</th>' +
+        M.map(function (m) { return '<th scope="col">' + rh(m) + '<small>' + esc(roundSub(m)) + '</small></th>'; }).join('') +
+        '<th scope="col" class="chg">' + (nR > 2 ? t('changeR', { a: first.round, b: last.round }) : t('change')) + '</th></tr></thead><tbody>' + kp + '</tbody></table></div>' +
+      '<div class="rounds-h n' + nR + '">' + M.map(function (m) { return '<div>' + rh(m) + ' ' + esc(roundSub(m)) + '</div>'; }).join('') + '</div>' +
+      '<div class="charts n' + nR + '">' +
+      chartRow('cfd', function (m) { return cfdSvg(m, maxY, maxX) + cfdLegend(m.columns); }) +
+      chartRow('ctDist', function (m) { return histSvg(m.cycleTimes, ctMax, hMax, urgentCycleTimes(g, m.round), m.p85CycleTime) + (anyUrgent ? histLegend() : ''); }) +
       '</div>';
   }
   function histLegend() {
@@ -1219,7 +1245,7 @@
     rows.push([]);
     var cols = E.columns(g);
     rows.push(['round', 'day'].concat(cols.map(function (c) { return colLabel(c.id); }), [colLabel('done'), 'blocked']));
-    [1, 2].forEach(function (r) {
+    [1, 2, 3].forEach(function (r) {
       var m = E.metrics(g, r);
       if (m) m.days.forEach(function (d) { rows.push([r, d.day].concat(cols.map(function (c) { return d.c[c.id] || 0; }), [d.done, d.blocked])); });
     });
@@ -1324,6 +1350,7 @@
       var f = d.fac;
       if (f === 'start1') act(function (g) { return E.startRound(g, 1); });
       if (f === 'start2') act(function (g) { return E.startRound(g, 2); });
+      if (f === 'start3') act(function (g) { return E.startRound(g, 3); });
       if (f === 'debrief') act(function (g) { return E.showDebrief(g); });
       if (f === 'addBacklog') act(function (g) { return E.addBacklog(g); });
       if (f === 'suggest') { var sw = suggestShared(); actShared(function (g) { return E.updateSettings(g, { wip: sw }); }); }

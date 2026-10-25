@@ -309,6 +309,29 @@ test('round 2 WIP limits: carried work above the limit blocks new work until it 
   assert.ok(l.some(a => a.type === 'move'), 'finishing work is still possible');
 });
 
+test('optional round 3: fresh board, WIP limits, only after round 2', () => {
+  const g = setup(2, { days: 2, wip: { dev: 1, test: 1 } });
+  assert.strictEqual(E.startRound(g, 3).ok, false, 'not before round 2');
+  E.startRound(g, 1);
+  E.roll(g, 'p1', 5); E.apply(g, 'p1', { type: 'start' }); E.apply(g, 'p1', { type: 'start' });
+  E.endRound(g);
+  assert.strictEqual(E.startRound(g, 3).ok, false, 'not straight after round 1');
+  E.startRound(g, 2); E.endRound(g);
+  assert.ok(E.roundCards(g, 2).length > 0, 'round 2 had carried work');
+  assert.ok(E.startRound(g, 3).ok);
+  assert.strictEqual(E.roundCards(g).length, 0, 'round 3 starts with an empty board');
+  assert.strictEqual(E.backlogTasks(g).length, 10, 'fresh backlog of 10');
+  assert.ok(E.wipActive(g));
+  E.roll(g, 'p1', 5); E.apply(g, 'p1', { type: 'start' });
+  assert.ok(!E.legalActions(g, 'p1').some(a => a.type === 'start'), 'WIP limit 1 applies in round 3');
+  const c = E.roundCards(g)[0];
+  assert.strictEqual(E.daysInProcess(g, c), 1);
+  E.endRound(g);
+  assert.ok(E.metrics(g, 3).wipLimits);
+  assert.strictEqual(E.metrics(g, 3).started, 1);
+  assert.ok(E.showDebrief(g).ok);
+});
+
 test('sessions saved by version 1 are upgraded', () => {
   const g = E.newGame('f'); delete g.settings.columns; g.settings.wip = { dev: 4, test: 5 };
   E.norm(g);
@@ -337,7 +360,7 @@ function fuzz(games) {
     const wip = {}; E.columns(g).forEach(c => { wip[c.id] = Math.random() < .1 ? 0 : 1 + Math.floor(Math.random() * 4); });
     const urgentPct = [0, 0, 10, 25, 50][n % 5];
     E.updateSettings(g, { wip, urgentPct });
-    for (const r of [1, 2]) {
+    for (const r of (n % 2 ? [1, 2, 3] : [1, 2])) {
       E.startRound(g, r);
       let guard = 0;
       while (g.phase === 'playing' && guard++ < 5000) {
@@ -358,12 +381,13 @@ function fuzz(games) {
           if (a.card) assert.ok(!touched[a.card], 'same task twice in a day');
           if (a.type === 'block') assert.ok(E.isActive(g, g.cards[a.card].col), 'block only in active columns');
           const before = {};
-          if (r === 2) for (const c of E.columns(g)) before[c.id] = E.countIn(g, c.id);
+          if (r >= 2) for (const c of E.columns(g)) before[c.id] = E.countIn(g, c.id);
           assert.ok(E.apply(g, p, a).ok);
           // carried-over work can start a column above its limit; it may only shrink from there
-          if (r === 2) for (const c of E.columns(g)) {
+          if (r >= 2) for (const c of E.columns(g)) {
             const lim = E.limitOf(g, c.id); if (!lim) continue;
             const n = E.countIn(g, c.id);
+            if (r === 3) assert.ok(n <= lim, `round 3 starts empty: WIP never above the limit in ${c.id}`);
             assert.ok(n <= Math.max(lim, before[c.id]), `WIP exceeded in ${c.id}: ${n} > ${lim}`);
           }
         }

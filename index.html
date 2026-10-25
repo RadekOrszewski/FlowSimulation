@@ -409,6 +409,13 @@ body.dragging-task .col.dropzone{box-shadow:inset 0 0 0 3px var(--blue);backgrou
 .card.dropped{opacity:.55;background:#f1efe9;filter:grayscale(.6)}
 .card.dropped .dropx{background:var(--navy)}
 .card .stamp.removed{border-color:#495057;color:#495057}
+
+/* ---------- optional round 3 (v8) ---------- */
+.charts.n3,.rounds-h.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1100px){.charts.n3{grid-template-columns:1fr}}
+.cmp-table.n3 td{width:16%}
+.cmp-table.n3 tbody th{width:32%}
+.rh.r3{background:var(--navy);color:#fff}
 </style>
 </head>
 <body>
