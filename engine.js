@@ -488,15 +488,22 @@
     if (n === 1 && g.phase !== 'lobby') return fail('badPhase');
     if (n === 2 && !(g.round === 1 && g.phase === 'roundEnd')) return fail('badPhase');
     if (!playerList(g).length) return fail('noPlayers');
+    var carried = n === 2 ? carryOver(g) : 0;
     g.phase = 'playing';
     g.round = n;
     g.day = 1;
     g.turns = {};
-    g.backlog = [];
-    pushTasks(g, BACKLOG_START);
+    if (n === 1) { g.backlog = []; pushTasks(g, BACKLOG_START); }
+    // round 2 keeps the board: unfinished work and the remaining backlog stay
     var d0 = { c: {}, done: 0, blocked: 0, urgent: 0 };
     columns(g).forEach(function (c) { d0.c[c.id] = 0; });
+    roundCards(g, n).forEach(function (c) {
+      d0.c[c.col] = (d0.c[c.col] || 0) + 1;
+      if (c.blocked) d0.blocked++;
+      if (c.urgent) d0.urgent++;
+    });
     g.history['r' + n] = {
+      carried: carried,
       days: { d0: d0 },
       columns: clone(columns(g)),
       wipLimits: n === 2,
@@ -505,6 +512,41 @@
       startedAt: Date.now()
     };
     return ok([{ t: 'roundStart', round: n }]);
+  }
+
+  // ---------- carrying work from round 1 into round 2 ----------
+  function daysPlayed(g, round) {
+    var h = g.history['r' + round]; if (!h) return 0;
+    return Object.keys(h.days).reduce(function (m, k) { return Math.max(m, parseInt(k.slice(1), 10) || 0); }, 0);
+  }
+  // Unfinished round 1 tasks continue in round 2. Their day numbers are shifted so that
+  // round 2 day 1 follows the last day of round 1: days in process and cycle times keep counting.
+  function carryOver(g) {
+    var shift = daysPlayed(g, 1), n = 0;
+    roundCards(g, 1).forEach(function (c) {
+      if (c.col === 'done' || c.dropped) return;
+      if (!colById(g, c.col)) return;   // column no longer exists
+      var id = 'c2_' + c.no, cp = clone(c);
+      cp.id = id; cp.round = 2; cp.carried = true; cp.from = c.id;
+      cp.startDay = c.startDay - shift;
+      cp.path = (c.path || []).map(function (p) { return { c: p.c, d: p.d - shift }; });
+      delete cp.dropped;
+      g.cards[id] = cp; n++;
+    });
+    return n;
+  }
+  // Between the rounds the facilitator can take unfinished tasks off the board (toggle).
+  function toggleDrop(g, cardId) {
+    var c = g.cards[cardId];
+    if (!(g.phase === 'roundEnd' && g.round === 1)) return fail('badPhase');
+    if (!c || c.round !== 1 || c.col === 'done') return fail('illegal');
+    c.dropped = !c.dropped;
+    if (!c.dropped) delete c.dropped;
+    return ok([{ t: c.dropped ? 'drop' : 'undrop', no: c.no }]);
+  }
+  function daysInProcess(g, c) {
+    if (c.col === 'done') return c.doneDay - c.startDay + 1;
+    return g.day - c.startDay + 1;
   }
 
   function roll(g, pid, value) {
@@ -636,7 +678,8 @@
     return {
       round: round,
       daysPlayed: played.length,
-      started: cards.length,
+      started: cards.filter(function (c) { return !c.carried; }).length,
+      carriedIn: cards.filter(function (c) { return c.carried; }).length,
       finished: done.length,
       inProgress: cards.length - done.length,
       blockedAtEnd: cards.filter(function (c) { return c.blocked && c.col !== 'done'; }).length,
@@ -671,6 +714,7 @@
     addPlayer: addPlayer, removePlayer: removePlayer, updateSettings: updateSettings,
     addActiveColumn: addActiveColumn, removeColumn: removeColumn, togglePassiveAfter: togglePassiveAfter, suggestWip: suggestWip,
     startRound: startRound, roll: roll, apply: apply, forceEndTurn: forceEndTurn,
+    toggleDrop: toggleDrop, daysInProcess: daysInProcess, daysPlayed: daysPlayed,
     nextDay: nextDay, endRound: endRound, showDebrief: showDebrief, metrics: metrics
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -270,6 +270,45 @@ test('work steps can be marked Analysis or Execution at any time', () => {
   assert.strictEqual(E.colById(g, 'dev').kind, 'execution');
 });
 
+test('round 2 keeps unfinished work; the facilitator can take tasks off between rounds', () => {
+  const g = setup(1, { days: 3 });
+  E.startRound(g, 1);
+  E.roll(g, 'p1', 5); E.apply(g, 'p1', { type: 'start' }); E.apply(g, 'p1', { type: 'start' });   // d1: #1 #2
+  E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'start' });                                          // d2: #3
+  E.roll(g, 'p1', 3); E.apply(g, 'p1', { type: 'move', card: 'c1_1' });                             // d3: #1 -> test
+  assert.strictEqual(g.phase, 'roundEnd');
+  const left = E.backlogTasks({ phase: 'playing', backlog: g.backlog }).length;
+  assert.strictEqual(E.toggleDrop(g, 'c1_2').ok, true);
+  assert.ok(g.cards.c1_2.dropped);
+  E.toggleDrop(g, 'c1_3'); E.toggleDrop(g, 'c1_3');               // toggled back on
+  assert.ok(!g.cards.c1_3.dropped);
+  E.startRound(g, 2);
+  const r2 = E.roundCards(g, 2);
+  assert.deepStrictEqual(r2.map(c => c.no), [1, 3], 'unfinished tasks carried, dropped one left behind');
+  assert.ok(r2.every(c => c.carried));
+  assert.strictEqual(g.cards.c2_1.col, 'test', 'stays in its column');
+  assert.strictEqual(E.daysInProcess(g, g.cards.c2_1), 4, 'started r1 day 1 of 3 -> r2 day 1 is its 4th day');
+  assert.strictEqual(E.daysInProcess(g, g.cards.c2_3), 3, 'started r1 day 2 of 3 -> 3rd day');
+  assert.strictEqual(E.backlogTasks(g).length, left, 'backlog is kept, not refilled');
+  assert.strictEqual(E.metrics(g, 1).inProgress, 3, 'round 1 results unchanged');
+  assert.strictEqual(g.history.r2.days.d0.c.dev + g.history.r2.days.d0.c.test, 2, 'round 2 starts with the carried work');
+  assert.strictEqual(E.toggleDrop(g, 'c2_1').ok, false, 'only between the rounds');
+  const m2 = E.metrics(g, 2);
+  assert.strictEqual(m2.carriedIn, 2); assert.strictEqual(m2.started, 0);
+});
+
+test('round 2 WIP limits: carried work above the limit blocks new work until it drops', () => {
+  const g = setup(1, { days: 1, wip: { dev: 1, test: 2 } });
+  E.startRound(g, 1);
+  E.roll(g, 'p1', 5); E.apply(g, 'p1', { type: 'start' }); E.apply(g, 'p1', { type: 'start' });
+  E.startRound(g, 2);
+  assert.strictEqual(E.countIn(g, 'dev'), 2);
+  E.roll(g, 'p1', 3);
+  const l = E.legalActions(g, 'p1');
+  assert.ok(!l.some(a => a.type === 'start'), 'Development is over its limit: no new work');
+  assert.ok(l.some(a => a.type === 'move'), 'finishing work is still possible');
+});
+
 test('sessions saved by version 1 are upgraded', () => {
   const g = E.newGame('f'); delete g.settings.columns; g.settings.wip = { dev: 4, test: 5 };
   E.norm(g);
@@ -318,11 +357,14 @@ function fuzz(games) {
           }
           if (a.card) assert.ok(!touched[a.card], 'same task twice in a day');
           if (a.type === 'block') assert.ok(E.isActive(g, g.cards[a.card].col), 'block only in active columns');
+          const before = {};
+          if (r === 2) for (const c of E.columns(g)) before[c.id] = E.countIn(g, c.id);
           assert.ok(E.apply(g, p, a).ok);
+          // carried-over work can start a column above its limit; it may only shrink from there
           if (r === 2) for (const c of E.columns(g)) {
             const lim = E.limitOf(g, c.id); if (!lim) continue;
-            const inCol = E.roundCards(g).filter(x => x.col === c.id);
-            assert.ok(inCol.length <= lim, `WIP exceeded in ${c.id}: ${inCol.length} > ${lim}`);
+            const n = E.countIn(g, c.id);
+            assert.ok(n <= Math.max(lim, before[c.id]), `WIP exceeded in ${c.id}: ${n} > ${lim}`);
           }
         }
       }

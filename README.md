@@ -22,6 +22,8 @@ Players can't break the rules: the app only highlights the cards (and the *Start
 | **5–6** | **Two** actions from the same list, never two actions on the same task in one day |
 | **Can't act** | If no action on their own tasks is possible, they must **help**: move or unblock another player's task |
 
+- **Round 2 continues on the same board**: unfinished round 1 tasks stay where they were, and so does the remaining backlog (the Done column starts empty). Between the rounds the facilitator can open a group's board and click tasks to take them off (click again to put back). From round 2 on, each card shows how many days it has been in process since it left the backlog; carried-over tasks keep counting from round 1. Columns can start round 2 above their WIP limit: nothing new can enter them until they drop below it.
+- Cards you can act on are highlighted, without labels saying what to do: players decide whether to move, unblock or help.
 - Tasks flow **Backlog → work steps → Done** (default: Development, Testing); a move is one column to the right; blocked tasks can't move.
 - The **backlog** starts each round with **10 tasks** (urgent ones flagged). It is **not** refilled automatically: the facilitator clicks **+ Add 10 tasks to the backlog** whenever they decide. Players start a task by **dragging it** from the backlog onto the first work column (or clicking it), and they choose which one, urgent or not. With an empty backlog nobody can start.
 - A task started today can't also be moved today.

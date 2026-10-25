@@ -80,6 +80,11 @@
       wipTitle: 'WIP limits for round 2',
       wipSuggest: 'Suggestion for {n} players: {list}', apply: 'Apply',
       showResults: 'Show debrief to everyone', r1done: 'Round 1 is over. Discuss what happened, then set the WIP limits.',
+      carryTitle: 'Work in progress for round 2', carryHelp: 'Round 2 continues on this board: unfinished tasks and the backlog stay. Click a task on the board to take it off (click again to put it back).',
+      carryCount: '{n} of {m} unfinished tasks will continue in round 2', carryWs: 'Unfinished work stays on the boards. To take tasks off before round 2, open a group\'s board.',
+      dropTask: 'Take this task off the board for round 2', restoreTask: 'Put this task back for round 2', removed: 'REMOVED',
+      ageShort: '{n}d', ageTip: 'In process for {n} days (since it left the backlog)', k_carried: 'Tasks carried over from round 1',
+      l_drop: 'Facilitator took #{no} off the board', l_undrop: 'Facilitator put #{no} back on the board',
       r2done: 'Both rounds are done. Open the debrief to compare them.',
       // results
       resultsTitle: 'Round {n} results', debriefTitle: 'Debrief: what did limiting WIP change?',
@@ -188,6 +193,11 @@
       wipTitle: 'Limity WIP na rundę 2',
       wipSuggest: 'Propozycja dla {n} graczy: {list}', apply: 'Zastosuj',
       showResults: 'Pokaż podsumowanie wszystkim', r1done: 'Runda 1 zakończona. Omówcie, co się stało, potem ustaw limity WIP.',
+      carryTitle: 'Praca w toku na rundę 2', carryHelp: 'Runda 2 toczy się na tej samej tablicy: nieukończone zadania i backlog zostają. Kliknij zadanie na tablicy, by je zdjąć (kliknij ponownie, by przywrócić).',
+      carryCount: '{n} z {m} nieukończonych zadań przejdzie do rundy 2', carryWs: 'Nieukończona praca zostaje na tablicach. Aby zdjąć zadania przed rundą 2, otwórz tablicę grupy.',
+      dropTask: 'Zdejmij to zadanie z tablicy na rundę 2', restoreTask: 'Przywróć to zadanie na rundę 2', removed: 'ZDJĘTE',
+      ageShort: '{n} dni', ageTip: 'W toku od {n} dni (od wyjścia z backlogu)', k_carried: 'Zadania przeniesione z rundy 1',
+      l_drop: 'Prowadzący zdejmuje #{no} z tablicy', l_undrop: 'Prowadzący przywraca #{no} na tablicę',
       r2done: 'Obie rundy zakończone. Otwórz podsumowanie, żeby je porównać.',
       resultsTitle: 'Wyniki rundy {n}', debriefTitle: 'Podsumowanie: co zmieniło ograniczenie WIP?',
       k_finished: 'Ukończone zadania', k_started: 'Rozpoczęte zadania', k_ct85: 'Czas cyklu (85%)',
@@ -564,7 +574,7 @@
     html += '<div class="panel fac"><h3>' + t('wsRounds') + '</h3><div class="stack-btns" style="margin-top:4px">';
     if (lobby) html += '<button class="btn y" data-wsfac="start1">' + t('startR1All') + '</button>';
     if (anyPlaying) html += '<button class="btn ghost" data-wsfac="endRound">' + t('endRoundAll') + '</button>';
-    if (r1done) html += '<button class="btn y" data-wsfac="start2">' + t('startR2All') + '</button>';
+    if (r1done) html += '<p class="small muted" style="margin:0 0 4px">' + t('carryWs') + '</p><button class="btn y" data-wsfac="start2">' + t('startR2All') + '</button>';
     if (r2end) html += '<button class="btn y" data-wsfac="debrief">' + t('showDebriefAll') + '</button>';
     if (!lobby && !anyPlaying && !r1done && !r2end) html += '<p class="small muted" style="margin:0">' + t('gs_debrief') + '</p>';
     html += '</div></div>';
@@ -779,18 +789,27 @@
     var myStepCanStart = tn && tn.roll && !tn.done && tn.steps.length && tn.steps[0] !== 'block';
     var startBlockedByWip = myStepCanStart && !canStart && !E.hasCapacity(g, E.firstCol(g)) && E.backlogTasks(g).length > 0;
 
+    var dropMode = S.fac && g.phase === 'roundEnd' && g.round === 1;
     function card(c) {
       var p = g.players[c.owner] || { name: '?', color: '#dee2e6' };
       var a = byCard[c.id];
       var cls = 'card' + (c.owner === S.me ? ' mine' : '') + (c.blocked ? ' blocked' : '') + (c.urgent ? ' urgent' : '') + (a ? ' act' + (a.help ? ' help' : '') : '') +
         ((S.changedUntil[c.id] || 0) > now ? ' changed' : '') + (c.helpers ? ' helped' : '');
       var rot = (((c.no * 37) % 7) - 3) * 0.5;
-      var tip = a ? t('tip_' + (a.help ? 'help_' : '') + a.type) : '';
+      // no action labels on the cards: players decide what to do with a highlighted card themselves
       var title = esc(p.name) + (c.urgent ? ' · ' + t('urgent') : '');
-      return '<button class="' + cls + '" style="--rot:' + rot + 'deg"' +
-        (a ? ' data-act="' + a.type + '" data-card="' + c.id + '" title="' + esc(tip) + '"' : ' tabindex="-1" title="' + title + '"') + '>' +
-        '<span class="no">#' + c.no + (c.urgent ? ' <span class="bolt">⚡</span>' : '') + '</span>' + (c.blocked ? '<span class="stamp">' + t('blocked') + '</span>' : '') +
-        '<span class="own">' + av(p, 24) + '<span>' + esc(p.name) + '</span></span>' + (a ? '<span class="tip">' + esc(tip) + '</span>' : '') + '</button>';
+      var age = g.round === 2 && c.col !== 'done' ? E.daysInProcess(g, c) : null;
+      var canDrop = dropMode && c.col !== 'done';
+      if (canDrop) cls += ' droppable' + (c.dropped ? ' dropped' : '');
+      var attrs = a ? ' data-act="' + a.type + '" data-card="' + c.id + '" aria-label="#' + c.no + ' · ' + title + '"'
+        : canDrop ? ' data-discard="' + c.id + '" title="' + esc(t(c.dropped ? 'restoreTask' : 'dropTask')) + '"'
+        : ' tabindex="-1" title="' + title + '"';
+      return '<button class="' + cls + '" style="--rot:' + rot + 'deg"' + attrs + '>' +
+        '<span class="no">#' + c.no + (c.urgent ? ' <span class="bolt">⚡</span>' : '') +
+        (age != null ? '<span class="age" title="' + esc(t('ageTip', { n: age })) + '">' + t('ageShort', { n: age }) + '</span>' : '') + '</span>' +
+        (c.blocked ? '<span class="stamp">' + t('blocked') + '</span>' : '') +
+        (canDrop ? '<span class="dropx" aria-hidden="true">' + (c.dropped ? '↺' : '✕') + '</span>' + (c.dropped ? '<span class="stamp removed">' + t('removed') + '</span>' : '') : '') +
+        '<span class="own">' + av(p, 24) + '<span>' + esc(p.name) + '</span></span></button>';
     }
     function column(key, type) {
       var list = cards.filter(function (c) { return c.col === key; }).sort(function (a, b) {
@@ -917,7 +936,7 @@
   function renderLog() {
     var el = document.getElementById('sLog'); if (!el) return;
     var items = S.log.slice(-80).reverse().map(function (e) {
-      var sys = /dayEnd|roundStart|roundEnd|wipChange|backlogAdd/.test(e.t);
+      var sys = /dayEnd|roundStart|roundEnd|wipChange|backlogAdd|drop/.test(e.t);
       return '<div' + (sys ? ' class="sys"' : '') + '>' + logText(e) + '</div>';
     }).join('');
     setHTML(el, '<div class="panel"><h3>' + t('log') + '</h3><div class="log">' + items + '</div></div>');
@@ -979,7 +998,10 @@
         (s.turnMode !== 'turns' ? '<label class="checkline"><input type="checkbox" data-set="autoAdvance"' + (s.autoAdvance ? ' checked' : '') + '> ' + t('autoAdv') + '</label>' : '') +
         '<button class="btn ghost sm" data-setup="1" style="margin-top:10px;width:100%">✎ ' + t('renameBtn') + '</button>';
     } else if (g.phase === 'roundEnd' && g.round === 1) {
+      var wipLeft = E.roundCards(g, 1).filter(function (c) { return c.col !== 'done'; }), keep = wipLeft.filter(function (c) { return !c.dropped; }).length;
       html += '<p class="small" style="margin:12px 0 0">' + t('r1done') + '</p>' +
+        '<div class="fsec"><div class="fsec-h">' + t('carryTitle') + '</div><p class="small" style="margin:0">' + t('carryHelp') + '</p>' +
+        '<p class="small" style="margin:6px 0 0"><b>' + t('carryCount', { n: keep, m: wipLeft.length }) + '</b></p></div>' +
         '<div class="fsec"><div class="fsec-h">' + t('wipTitle') + '</div>' + wipEditor(g, false) + '</div>' +
         '<div class="fsec"><div class="fsec-h">' + t('urgentTitle') + '</div>' + urgentEditor(g) + '</div>' +
         '<label class="f">' + t('daysPerRound') + '</label><input type="number" min="3" max="40" value="' + s.days + '" data-set="days">' +
@@ -1154,6 +1176,7 @@
       cmp(t('k_wip85'), m1 && m1.p85Wip, m2 && m2.p85Wip, '', true) +
       cmp(t('k_tp'), m1 && m1.throughputPerDay, m2 && m2.throughputPerDay, '', false, 100) +
       cmp(t('k_started'), m1 && m1.started, m2 && m2.started, '', null, 1) +
+      (m2 && m2.carriedIn ? cmp(t('k_carried'), null, m2.carriedIn, '', null, 1) : '') +
       cmp(t('k_wipEnd'), m1 && m1.inProgress, m2 && m2.inProgress, '', true, 1) +
       cmp(t('k_helped'), m1 && m1.helpedCards, m2 && m2.helpedCards, '', false, 1);
     if (queues) kp += cmp(t('k_wait'), m1 && m1.p85Wait, m2 && m2.p85Wait, t('days_u'), true) +
@@ -1183,7 +1206,7 @@
     downloadCsvCur(S.code);
   }
   function downloadCsvCur(code) {
-    var g = S.game, rows = [['round', 'task', 'owner', 'urgent', 'start_day', 'done_day', 'cycle_time_days', 'days_waiting_in_queues', 'column_at_end', 'blocked_at_end', 'helped_by', 'path']];
+    var g = S.game, rows = [['round', 'task', 'owner', 'urgent', 'start_day', 'done_day', 'cycle_time_days', 'days_waiting_in_queues', 'column_at_end', 'blocked_at_end', 'helped_by', 'path', 'carried_over_from_round_1', 'taken_off_after_round_1']];
     var passive = {}; E.columns(g).forEach(function (c) { if (c.type === 'passive') passive[c.id] = true; });
     Object.keys(g.cards).map(function (k) { return g.cards[k]; }).sort(function (a, b) { return a.round - b.round || a.no - b.no; }).forEach(function (c) {
       var p = g.players[c.owner], path = c.path || [], wait = 0;
@@ -1191,7 +1214,7 @@
       rows.push([c.round, c.no, p ? p.name : '', c.urgent ? 'yes' : 'no', c.startDay, c.doneDay || '', c.doneDay ? c.doneDay - c.startDay + 1 : '', c.doneDay ? wait : '',
         colLabel(c.col), c.blocked ? 'yes' : 'no',
         c.helpers ? Object.keys(c.helpers).map(function (h) { return g.players[h] ? g.players[h].name : '?'; }).join(' | ') : '',
-        path.map(function (s) { return colLabel(s.c) + '@' + s.d; }).join(' > ')]);
+        path.map(function (s) { return colLabel(s.c) + '@' + s.d; }).join(' > '), c.carried ? 'yes' : 'no', c.dropped ? 'yes' : 'no']);
     });
     rows.push([]);
     var cols = E.columns(g);
@@ -1290,6 +1313,7 @@
     }
     if (d.act) { act(function (g) { return E.apply(g, S.me, { type: d.act, card: d.card }); }); return; }
     if (d.pick) { startTask(d.pick); return; }
+    if (d.discard) { act(function (g) { return E.toggleDrop(g, d.discard); }); return; }
     if (d.skip) { act(function (g) { return E.forceEndTurn(g, d.skip); }); return; }
     if (d.remove) {
       var p = S.game.players[d.remove];
